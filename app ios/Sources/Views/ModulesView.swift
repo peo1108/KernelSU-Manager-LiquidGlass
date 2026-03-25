@@ -96,10 +96,10 @@ struct ModulesView: View {
                 }
                 Spacer()
                 
-                Toggle("", isOn: Binding(
-                    get: { mods[index] },
-                    set: { newVal in
-                        mods[index] = newVal
+                Toggle("", isOn: $mods[index])
+                    .labelsHidden()
+                    .tint(ksGreen)
+                    .onChange(of: mods[index]) { newVal in
                         if newVal && isDangerous {
                             UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
                             pendingToggleIndex = index
@@ -108,9 +108,6 @@ struct ModulesView: View {
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         }
                     }
-                ))
-                .labelsHidden()
-                .tint(ksGreen)
             }
             
             Rectangle()

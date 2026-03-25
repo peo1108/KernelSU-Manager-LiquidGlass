@@ -54,11 +54,11 @@ struct HomeView: View {
                         .padding(.vertical, 12)
                         
                         VStack(spacing: 0) {
-                            diagRow(title: "Kernel Version", value: "Linux 6.6.75-gki", statusColor: .clear)
+                            diagRow(title: "Kernel Version", value: "Linux 6.6.75-gki")
                             diagRow(title: "SELinux State", value: "Enforcing (Active)", statusColor: ksGreen)
-                            diagRow(title: "System Uptime", value: "4d 12h 03m 44s", statusColor: .clear)
+                            diagRow(title: "System Uptime", value: "4d 12h 03m 44s")
                             diagRow(title: "Root Daemon", value: "ksud (PID 482)", statusColor: ksCyan)
-                            diagRow(title: "Mount Path", value: "/data/adb/ksu", statusColor: .clear, noDivider: true)
+                            diagRow(title: "Mount Path", value: "/data/adb/ksu", noDivider: true)
                         }
                         .padding(.vertical, 4)
                         .background(ksSurface05)
@@ -132,15 +132,15 @@ struct HomeView: View {
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 0.5))
     }
     
-    private func diagRow(title: String, value: String, statusColor: Color, noDivider: Bool = false) -> some View {
+    private func diagRow(title: String, value: String, statusColor: Color? = nil, noDivider: Bool = false) -> some View {
         VStack(spacing: 0) {
             HStack {
                 Text(title)
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(ksOnSurface)
                 Spacer()
-                if statusColor != .clear {
-                    Circle().fill(statusColor).frame(width: 6, height: 6)
+                if let sc = statusColor {
+                    Circle().fill(sc).frame(width: 6, height: 6)
                 }
                 Text(value)
                     .font(.system(size: 13, design: .monospaced))
