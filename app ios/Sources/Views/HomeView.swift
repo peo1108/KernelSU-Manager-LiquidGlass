@@ -59,7 +59,7 @@ struct HomeView: View {
                             diagRow(title: "AMFI / SSV", value: "Patched (Active)", statusColor: ksGreen)
                             diagRow(title: "System Uptime", value: "4d 12h 03m 44s")
                             diagRow(title: "Daemon", value: "jailbreakd (PID 74)", statusColor: ksCyan)
-                            diagRow(title: "Bootstrap", value: "/var/jb (Rootless)", noDivider: true)
+                            diagRow(title: "Bootstrap", value: "/var/jb (Root Su)", noDivider: true)
                         }
                         .padding(.vertical, 4)
                         .background(ksSurface05)
@@ -91,7 +91,7 @@ struct HomeView: View {
                         Text("Jailbroken")
                             .font(.system(size: 22, weight: .bold))
                             .foregroundColor(ksGreen)
-                        Text("iOS 26.4 (Rootless)")
+                        Text("iOS 26.4 (Root Su)")
                             .font(.system(size: 12, design: .monospaced))
                             .foregroundColor(ksGreen.opacity(0.7))
                     }
