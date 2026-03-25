@@ -15,12 +15,14 @@ struct SuperuserView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(Array(filteredApps.enumerated()), id: \.element.id) { index, app in
-                        AppRow(app: app, delay: 0.05) // Small delay instead of pure sequence to avoid over-delaying
+                // Spacing from top
+                Color.clear.frame(height: 6)
+                
+                LazyVStack(spacing: 0) {
+                    ForEach(filteredApps, id: \.id) { app in
+                        AppRow(app: app)
                     }
                 }
-                .padding()
             }
             .navigationTitle("Superuser")
             .searchable(text: $searchText, prompt: "Search apps")
@@ -30,38 +32,39 @@ struct SuperuserView: View {
 
 struct AppRow: View {
     let app: AppInfo
-    let delay: Double
     
     @State private var isVisible = false
     
     var body: some View {
-        HStack(spacing: 16) {
-            // Placeholder for App Icon
+        HStack(spacing: 14) {
+            // App Icon Placeholder (Rounded)
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemGray4))
+                .fill(Color.white.opacity(0.1))
                 .frame(width: 48, height: 48)
                 .overlay(
                     Text(String(app.name.prefix(1)))
                         .font(.title2)
-                        .foregroundColor(.primary)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
                 )
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(app.name)
-                    .font(.headline)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
                     .lineLimit(1)
                 
                 Text(app.bundleId)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color.white.opacity(0.6))
                     .lineLimit(1)
                 
-                HStack {
+                HStack(spacing: 8) {
                     if app.isRoot {
-                        TagView(text: "ROOT", color: .red)
+                        TagView(text: "ROOT", color: Color(red: 0.9, green: 0.3, blue: 0.3))
                     }
                     if app.isSystem {
-                        TagView(text: "SYSTEM", color: .blue)
+                        TagView(text: "SYSTEM", color: Color(red: 0.3, green: 0.5, blue: 0.9))
                     }
                 }
             }
@@ -69,18 +72,23 @@ struct AppRow: View {
             Spacer()
             
             Image(systemName: "chevron.right")
-                .foregroundColor(.secondary)
+                .foregroundColor(Color.white.opacity(0.4))
                 .font(.system(size: 14, weight: .semibold))
         }
-        .padding()
-        .background(Color(.systemGray6))
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        // Liquid Glass surface exact opacity match (0.05 alpha)
+        .background(Color.white.opacity(0.05))
         .cornerRadius(16)
-        // macOS style entrance animation from bottom right
+        .padding(.horizontal, 12)
+        .padding(.bottom, 12)
+        // macOS style entrance animation from bottom right (x: 400, y: 600)
         .opacity(isVisible ? 1 : 0)
-        .offset(x: isVisible ? 0 : 200, y: isVisible ? 0 : 300)
-        .scaleEffect(isVisible ? 1 : 0.8)
+        .offset(x: isVisible ? 0 : 400, y: isVisible ? 0 : 600)
+        .scaleEffect(isVisible ? 1 : 0.9)
         .onAppear {
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.75).delay(delay)) {
+            // Easing FastOutSlowIn with 800ms duration
+            withAnimation(.timingCurve(0.4, 0.0, 0.2, 1.0, duration: 0.8)) {
                 isVisible = true
             }
         }
@@ -95,7 +103,7 @@ struct TagView: View {
         Text(text)
             .font(.system(size: 10, weight: .bold))
             .padding(.horizontal, 6)
-            .padding(.vertical, 2)
+            .padding(.vertical, 3)
             .background(color.opacity(0.15))
             .foregroundColor(color)
             .cornerRadius(4)
