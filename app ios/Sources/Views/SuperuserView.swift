@@ -125,7 +125,6 @@ struct SuperuserView: View {
         return appManager.apps.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
     }
     
-    @ViewBuilder
     private func appRow(_ app: AppInfo) -> some View {
         let info = iconForApp(app.name)
         HStack(spacing: 14) {
@@ -171,7 +170,6 @@ struct SuperuserView: View {
         .padding(.horizontal, 12)
     }
     
-    @ViewBuilder
     private func tagView(_ text: String, _ bg: Color, _ fg: Color) -> some View {
         Text(text)
             .font(.system(size: 10, weight: .bold, design: .monospaced))

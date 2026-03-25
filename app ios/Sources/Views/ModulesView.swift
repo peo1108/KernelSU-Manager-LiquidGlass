@@ -71,7 +71,6 @@ struct ModulesView: View {
         }
     }
     
-    @ViewBuilder
     private func moduleCard(index: Int, title: String, ver: String, desc: String, isDangerous: Bool) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {

@@ -91,7 +91,6 @@ struct LogsView: View {
         }
     }
     
-    @ViewBuilder
     private func logRow(_ i: Int) -> some View {
         let entry = entries[i]
         
