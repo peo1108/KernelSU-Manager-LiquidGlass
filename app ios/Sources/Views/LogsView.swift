@@ -102,7 +102,7 @@ struct LogsView: View {
         default: tagColor = ksBlue; tagText = "INFO"
         }
         
-        VStack(alignment: .leading, spacing: 2) {
+        return VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .top, spacing: 6) {
                 Text("[\(entry.0)]")
                     .font(.system(size: 11, design: .monospaced))

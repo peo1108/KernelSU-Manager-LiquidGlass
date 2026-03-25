@@ -127,7 +127,7 @@ struct SuperuserView: View {
     
     private func appRow(_ app: AppInfo) -> some View {
         let info = iconForApp(app.name)
-        HStack(spacing: 14) {
+        return HStack(spacing: 14) {
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(LinearGradient(colors: [info.1, info.2], startPoint: .topLeading, endPoint: .bottomTrailing))
