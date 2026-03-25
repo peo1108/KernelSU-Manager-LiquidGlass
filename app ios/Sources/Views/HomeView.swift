@@ -13,7 +13,7 @@ struct HomeView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("KernelSU")
+                Text("LiquidJB")
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(ksOnSurface)
                 Spacer()
@@ -54,11 +54,11 @@ struct HomeView: View {
                         .padding(.vertical, 12)
                         
                         VStack(spacing: 0) {
-                            diagRow(title: "Kernel Version", value: "Linux 6.6.75-gki")
-                            diagRow(title: "SELinux State", value: "Enforcing (Active)", statusColor: ksGreen)
+                            diagRow(title: "Darwin Kernel", value: "23.4.0 (arm64e)")
+                            diagRow(title: "AMFI / SSV", value: "Patched (Active)", statusColor: ksGreen)
                             diagRow(title: "System Uptime", value: "4d 12h 03m 44s")
-                            diagRow(title: "Root Daemon", value: "ksud (PID 482)", statusColor: ksCyan)
-                            diagRow(title: "Mount Path", value: "/data/adb/ksu", noDivider: true)
+                            diagRow(title: "Daemon", value: "jailbreakd (PID 74)", statusColor: ksCyan)
+                            diagRow(title: "Bootstrap", value: "/var/jb (Rootless)", noDivider: true)
                         }
                         .padding(.vertical, 4)
                         .background(ksSurface05)
@@ -87,10 +87,10 @@ struct HomeView: View {
             VStack(alignment: .leading) {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Working")
+                        Text("Jailbroken")
                             .font(.system(size: 22, weight: .bold))
                             .foregroundColor(ksGreen)
-                        Text("v1.0.0-release")
+                        Text("iOS 16.5 (Rootless)")
                             .font(.system(size: 12, design: .monospaced))
                             .foregroundColor(ksGreen.opacity(0.7))
                     }

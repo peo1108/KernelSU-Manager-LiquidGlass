@@ -25,6 +25,10 @@ class AppListManager: ObservableObject {
     
     static func makeMockApps() -> [AppInfo] {
         var list: [AppInfo] = []
+        list.append(AppInfo(name: "Sileo", bundleId: "org.coolstar.sileo", isRoot: true, isSystem: true))
+        list.append(AppInfo(name: "Zebra", bundleId: "xyz.willy.Zebra", isRoot: true, isSystem: true))
+        list.append(AppInfo(name: "TrollStore", bundleId: "com.opa334.TrollStore", isRoot: true, isSystem: true))
+        list.append(AppInfo(name: "NewTerm 3", bundleId: "ws.hbang.Terminal", isRoot: true, isSystem: false))
         list.append(AppInfo(name: "TikTok", bundleId: "com.zhiliaoapp.musically", isRoot: true, isSystem: false))
         list.append(AppInfo(name: "Facebook", bundleId: "com.facebook.Facebook", isRoot: false, isSystem: false))
         list.append(AppInfo(name: "Messenger", bundleId: "com.facebook.Messenger", isRoot: true, isSystem: false))
@@ -41,10 +45,6 @@ class AppListManager: ObservableObject {
         list.append(AppInfo(name: "Settings", bundleId: "com.apple.Preferences", isRoot: false, isSystem: true))
         list.append(AppInfo(name: "Safari", bundleId: "com.apple.mobilesafari", isRoot: false, isSystem: true))
         list.append(AppInfo(name: "Camera", bundleId: "com.apple.camera", isRoot: false, isSystem: true))
-        list.append(AppInfo(name: "Grab", bundleId: "com.grabtaxi.passenger", isRoot: false, isSystem: false))
-        list.append(AppInfo(name: "MoMo", bundleId: "com.mservice.momotransfer", isRoot: false, isSystem: false))
-        list.append(AppInfo(name: "Genshin Impact", bundleId: "com.miHoYo.GenshinImpact", isRoot: false, isSystem: false))
-        list.append(AppInfo(name: "Free Fire", bundleId: "com.dts.freefireth", isRoot: false, isSystem: false))
         list.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         return list
     }

@@ -65,7 +65,7 @@ struct LogsView: View {
                     }
                     
                     HStack(spacing: 4) {
-                        Text("root@KernelSU:/#")
+                        Text("mobile@iPhone:~ $")
                             .font(.system(size: 12, design: .monospaced))
                             .foregroundColor(ksGreen)
                         Rectangle()

@@ -152,7 +152,7 @@ struct SuperuserView: View {
                             tagView("[ ROOT ]", ksRootBg, ksRootFg)
                         }
                         if app.isSystem {
-                            tagView("[ SYS_1000 ]", ksSystemBg, ksSystemFg)
+                            tagView("[ SYSTEM ]", ksSystemBg, ksSystemFg)
                         }
                     }
                     .padding(.top, 4)
