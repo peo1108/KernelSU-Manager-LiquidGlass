@@ -6,6 +6,9 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -350,7 +353,27 @@ private fun SimpleAppItem(
     app: AppInfo,
     matched: Boolean = false,
 ) {
-    Row {
+    val animatedProgress = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        animatedProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = 800, 
+                easing = FastOutSlowInEasing
+            )
+        )
+    }
+
+    Row(
+        modifier = Modifier.graphicsLayer {
+            val inverseProgress = 1f - animatedProgress.value
+            alpha = animatedProgress.value
+            translationX = inverseProgress * 400.dp.toPx()
+            translationY = inverseProgress * 600.dp.toPx()
+            scaleX = 0.9f + 0.1f * animatedProgress.value
+            scaleY = 0.9f + 0.1f * animatedProgress.value
+        }
+    ) {
         Box(
             modifier = Modifier
                 .padding(start = 12.dp)
@@ -413,10 +436,30 @@ private fun GroupItem(
             if (hasSharedUserId) add(StatusMeta("SHARED UID", bg, fg))
         }
     }
+
+    val animatedProgress = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        animatedProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = 800, 
+                easing = FastOutSlowInEasing
+            )
+        )
+    }
+
     Card(
         modifier = Modifier
             .padding(horizontal = 12.dp)
-            .padding(bottom = 12.dp),
+            .padding(bottom = 12.dp)
+            .graphicsLayer {
+                val inverseProgress = 1f - animatedProgress.value
+                alpha = animatedProgress.value
+                translationX = inverseProgress * 400.dp.toPx()
+                translationY = inverseProgress * 600.dp.toPx()
+                scaleX = 0.9f + 0.1f * animatedProgress.value
+                scaleY = 0.9f + 0.1f * animatedProgress.value
+            },
         colors = top.yukonga.miuix.kmp.basic.CardDefaults.defaultColors(color = colorScheme.surface.copy(alpha = 0.05f)),
         onClick = onClickPrimary,
         onLongPress = if (group.apps.size > 1) onToggleExpand else null,
