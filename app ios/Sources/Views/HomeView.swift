@@ -34,7 +34,7 @@ struct HomeView: View {
                         
                         VStack(spacing: 12) {
                             statCard(title: "Superuser", count: "8", icon: "shield.fill", color: ksCyan)
-                            statCard(title: "Modules", count: "14", icon: "puzzlepiece.extension.fill", color: .purple)
+                            statCard(title: "Tweaks", count: "14", icon: "wrench.and.screwdriver.fill", color: .purple)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -67,8 +67,9 @@ struct HomeView: View {
                     }
                     
                     // MARK: - Action Cards
-                    actionCard(title: "Safe Mode Reboot", desc: "Temporarily disable all modules", icon: "exclamationmark.triangle.fill", color: .orange)
-                    actionCard(title: "Flash ZIP/IMG", desc: "Install an update directly to boot partition", icon: "bolt.fill", color: ksRed)
+                    actionCard(title: "Respring", desc: "Restart SpringBoard to apply tweaks", icon: "arrow.triangle.2.circlepath", color: ksCyan)
+                    actionCard(title: "Safe Mode", desc: "Temporarily disable all tweaks", icon: "exclamationmark.triangle.fill", color: .orange)
+                    actionCard(title: "Rebuild Icon Cache", desc: "Fix missing or broken icons", icon: "square.grid.2x2.fill", color: ksGreen)
                     
                     Spacer().frame(height: 100)
                 }

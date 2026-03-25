@@ -15,22 +15,22 @@ struct LogsView: View {
     
     // 0: INFO, 1: WARN, 2: ERROR
     private let entries: [(String, Int, String, String)] = [
-        ("00:00:01.002", 0, "ksud", "KernelSU version: 12345"),
-        ("00:00:01.045", 0, "core", "SELinux mode: Enforcing"),
-        ("00:00:02.100", 0, "mount", "Mounting /data/adb/modules overlay"),
-        ("00:00:02.320", 0, "zygisk", "Loading module: Zygisk-LSPosed v1.9.2"),
-        ("00:00:02.405", 2, "shamiko", "Failed to bypass early vault, retrying..."),
-        ("00:00:02.601", 0, "shamiko", "Module loaded via fallback hook."),
-        ("00:00:03.111", 0, "ksud", "System ready. Waiting for SU requests..."),
-        ("00:01:12.890", 1, "su", "SU request PID 4591: com.zhiliaoapp.musically"),
-        ("00:01:12.902", 0, "su", "SU GRANTED -> TikTok (UID: 10123)"),
+        ("00:00:01.002", 0, "jbinit", "Jailbreak environment initialized (rootfs)"),
+        ("00:00:01.045", 0, "core", "SSV authentication bypassed successfully"),
+        ("00:00:02.100", 0, "mount", "Mounting /var/jb overlay"),
+        ("00:00:02.320", 0, "ellekit", "Loading tweak: SnowBoard.dylib v1.5.21"),
+        ("00:00:02.405", 2, "substrate", "Failed to hook CGSSetWindowProperty, retrying..."),
+        ("00:00:02.601", 0, "ellekit", "Tweak loaded via fallback unsandbox hook."),
+        ("00:00:03.111", 0, "jailbreakd", "System ready. Waiting for SSH/SU requests..."),
+        ("00:01:12.890", 1, "su", "SU request PID 4591: com.apple.Preferences"),
+        ("00:01:12.902", 0, "su", "SU GRANTED -> Settings (UID: 0)"),
         ("00:02:10.432", 2, "su", "SU DENIED -> com.facebook.Facebook"),
-        ("00:03:45.001", 0, "shamiko", "Hiding root from GMS (com.google.android.gms)"),
-        ("00:05:22.560", 1, "su", "SU request PID 9012: com.facebook.Messenger"),
-        ("00:05:22.580", 0, "su", "SU GRANTED -> Messenger (UID: 10125)"),
-        ("00:15:30.900", 2, "su", "SU DENIED -> PUBG MOBILE (UID: 10299)"),
-        ("00:20:00.000", 0, "core", "Health check: system nominal, memory 45MB"),
-        ("00:30:01.444", 0, "ksud", "ksud idle, CPU 0.1%"),
+        ("00:03:45.001", 0, "choicy", "Blocking injection into com.apple.mobilesafari"),
+        ("00:05:22.560", 1, "sshd", "Connection from 127.0.0.1 on port 2222"),
+        ("00:05:22.580", 0, "sshd", "Accepted publickey for root from 127.0.0.1"),
+        ("00:15:30.900", 2, "kernel", "sandbox map lookup failed: com.rovio.angrybirds"),
+        ("00:20:00.000", 0, "launchd", "Health check: system nominal, memory 45MB"),
+        ("00:30:01.444", 0, "jailbreakd", "jailbreakd idle, CPU 0.1%"),
     ]
     
     var body: some View {

@@ -122,7 +122,7 @@ struct FloatingTabBar: View {
     private let tabs: [(icon: String, label: String)] = [
         ("house.fill", "Home"),
         ("shield.fill", "Superuser"),
-        ("puzzlepiece.extension.fill", "Modules"),
+        ("wrench.and.screwdriver.fill", "Tweaks"),
         ("doc.text.fill", "Logs")
     ]
     

@@ -15,22 +15,22 @@ struct ModulesView: View {
     @State private var showInstallSheet = false
     
     let moduleData = [
-        ("Zygisk - LSPosed", "v1.9.2-release", "ART hooking framework", false),
-        ("Shamiko", "v1.1.1-182", "Hide Magisk root, Zygisk", false),
-        ("PlayIntegrityFix", "v17.9", "Pass Device verdict", false),
-        ("Tricky Store", "v1.2.4", "Generate valid certificates", true), // Dangerous
-        ("ZygiskNext", "v1.3.1", "Standalone Zygisk API", false),
-        ("BootloopSaver", "v3.1", "Save from bootloops", true), // Dangerous
-        ("BusyBox NDK", "v1.36.1", "Sys binary tools", false),
-        ("Font Manager", "v5.10.0", "Change system font", false),
-        ("SafetyNet Fix", "v3.0", "Legacy SafetyNet", false),
-        ("ACC", "v2024.6", "Advanced battery logic", true) // Dangerous
+        ("SnowBoard", "v1.5.21-Beta3", "A lightweight spiritual successor to Winterboard", false),
+        ("Cylinder Reborn", "v1.1.1", "Homescreen icon animations", false),
+        ("Filza File Manager", "v4.0.1-4", "Advanced File Manager with root access", true), // Dangerous
+        ("AppSync Unified", "v112.0", "Bypass iOS app signature validation", true), // Dangerous
+        ("TrollStore Helper", "v2.0.15", "Helper app for permanent IPAs", false),
+        ("ElleKit", "v1.1.2", "Tweak injection framework for arm64e", true), // Dangerous
+        ("iCleaner Pro", "v7.10.0", "The first real iOS system cleaner", false),
+        ("Snapper 3", "v1.2", "Pin screenshots on the screen", false),
+        ("Atria", "v1.4.1", "Dynamic homescreen layout manager", false),
+        ("Choicy", "v1.4.10-3", "Advanced Tweak Configuration", false)
     ]
     
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Modules")
+                Text("Tweaks")
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(ksOnSurface)
                 Spacer()
@@ -58,7 +58,7 @@ struct ModulesView: View {
                 .padding(.horizontal, 12)
             }
         }
-        .alert("System Modification", isPresented: $showConfirm) {
+        .alert("SpringBoard Injection", isPresented: $showConfirm) {
             Button("Cancel", role: .cancel) {
                 if let idx = pendingToggleIndex { mods[idx].toggle() }
             }
@@ -67,7 +67,7 @@ struct ModulesView: View {
                 // Action allowed
             }
         } message: {
-            Text("This module interacts deeply with the kernel. Enabling it incorrectly may cause a bootloop.")
+            Text("This tweak hooks deeply into system daemons. Enabling it incorrectly may cause a respring loop.")
         }
     }
     
