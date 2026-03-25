@@ -52,7 +52,7 @@ struct HomeView: View {
                     }
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.systemGray6))
+                    .background(Color.white.opacity(0.05))
                     .cornerRadius(16)
                 }
                 .padding()
@@ -72,7 +72,7 @@ struct HomeView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .background(Color(.systemGray6))
+        .background(Color.white.opacity(0.05))
         .cornerRadius(16)
     }
     

@@ -22,6 +22,7 @@ struct LogsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
             }
+            .background(Color.clear)
             .navigationTitle("Logs")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
