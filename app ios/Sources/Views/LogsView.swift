@@ -5,42 +5,38 @@ private let ksSurface05 = Color.white.opacity(0.05)
 private let ksOnSurface = Color.white
 private let ksSummary = Color.white.opacity(0.55)
 private let ksGreen = Color(red: 0.21, green: 0.82, blue: 0.40)
+private let ksBlue = Color(red: 0.3, green: 0.6, blue: 1.0)
+private let ksOrange = Color.orange
+private let ksRed = Color.red
 
 struct LogsView: View {
     @State private var visibleCount: Int = 0
     @State private var cursorVisible: Bool = true
     
-    private let entries: [(String, Int, String)] = [
-        ("00:00:01", 0, "KernelSU version: 12345"),
-        ("00:00:01", 0, "Build type: Release (GKI)"),
-        ("00:00:01", 0, "Starting ksud daemon..."),
-        ("00:00:01", 0, "SELinux mode: Enforcing"),
-        ("00:00:02", 0, "Mounting /data/adb/modules overlay"),
-        ("00:00:02", 0, "Loading module: Zygisk-LSPosed v1.9.2"),
-        ("00:00:02", 0, "Loading module: Shamiko v1.1.1"),
-        ("00:00:02", 0, "Loading module: PlayIntegrityFix v17.9"),
-        ("00:00:02", 0, "Loading module: Tricky Store v1.2.4"),
-        ("00:00:03", 0, "All modules loaded successfully"),
-        ("00:00:03", 0, "Zygisk injection started"),
-        ("00:00:04", 0, "System ready. Waiting for SU requests..."),
-        ("00:01:12", 1, "SU request: com.zhiliaoapp.musically"),
-        ("00:01:12", 0, "SU GRANTED -> TikTok"),
-        ("00:02:10", 2, "SU DENIED -> com.facebook.Facebook"),
-        ("00:03:45", 0, "Shamiko: Hiding root from GMS"),
-        ("00:04:01", 0, "PlayIntegrityFix: DEVICE -> PASS"),
-        ("00:05:22", 1, "SU request: com.facebook.Messenger"),
-        ("00:05:22", 0, "SU GRANTED -> Messenger"),
-        ("00:10:15", 0, "Tricky Store: STRONG -> PASS"),
-        ("00:15:30", 2, "SU DENIED -> PUBG MOBILE"),
-        ("00:20:00", 0, "Health check: system nominal"),
-        ("00:25:44", 0, "LSPosed: Hooked 142 methods"),
-        ("00:30:01", 0, "ksud idle, CPU 0.1%"),
+    // 0: INFO, 1: WARN, 2: ERROR
+    private let entries: [(String, Int, String, String)] = [
+        ("00:00:01.002", 0, "ksud", "KernelSU version: 12345"),
+        ("00:00:01.045", 0, "core", "SELinux mode: Enforcing"),
+        ("00:00:02.100", 0, "mount", "Mounting /data/adb/modules overlay"),
+        ("00:00:02.320", 0, "zygisk", "Loading module: Zygisk-LSPosed v1.9.2"),
+        ("00:00:02.405", 2, "shamiko", "Failed to bypass early vault, retrying..."),
+        ("00:00:02.601", 0, "shamiko", "Module loaded via fallback hook."),
+        ("00:00:03.111", 0, "ksud", "System ready. Waiting for SU requests..."),
+        ("00:01:12.890", 1, "su", "SU request PID 4591: com.zhiliaoapp.musically"),
+        ("00:01:12.902", 0, "su", "SU GRANTED -> TikTok (UID: 10123)"),
+        ("00:02:10.432", 2, "su", "SU DENIED -> com.facebook.Facebook"),
+        ("00:03:45.001", 0, "shamiko", "Hiding root from GMS (com.google.android.gms)"),
+        ("00:05:22.560", 1, "su", "SU request PID 9012: com.facebook.Messenger"),
+        ("00:05:22.580", 0, "su", "SU GRANTED -> Messenger (UID: 10125)"),
+        ("00:15:30.900", 2, "su", "SU DENIED -> PUBG MOBILE (UID: 10299)"),
+        ("00:20:00.000", 0, "core", "Health check: system nominal, memory 45MB"),
+        ("00:30:01.444", 0, "ksud", "ksud idle, CPU 0.1%"),
     ]
     
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Logs")
+                Text("Diagnostics")
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(ksOnSurface)
                 Spacer()
@@ -56,18 +52,21 @@ struct LogsView: View {
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        Text("CONSOLE OUTPUT")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(ksSummary)
+                        Spacer()
+                    }
+                    .padding(.bottom, 8)
+                    
                     ForEach(0..<visibleCount, id: \.self) { i in
                         logRow(i)
-                        if i < entries.count - 1 {
-                            Rectangle()
-                                .fill(Color.white.opacity(0.04))
-                                .frame(height: 0.5)
-                        }
                     }
                     
                     HStack(spacing: 4) {
-                        Text(">")
-                            .font(.system(size: 13, design: .monospaced))
+                        Text("root@KernelSU:/#")
+                            .font(.system(size: 12, design: .monospaced))
                             .foregroundColor(ksGreen)
                         Rectangle()
                             .fill(ksGreen)
@@ -76,17 +75,13 @@ struct LogsView: View {
                     }
                     .padding(.vertical, 8)
                 }
-                .padding(12)
-                .background(ksSurface05)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
-                )
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.black.opacity(0.6))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.1), lineWidth: 1))
                 .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                
-                Spacer().frame(height: 100)
+                .padding(.bottom, 100)
             }
         }
         .onAppear {
@@ -99,26 +94,39 @@ struct LogsView: View {
     @ViewBuilder
     private func logRow(_ i: Int) -> some View {
         let entry = entries[i]
-        let levelColor: Color = entry.1 == 0 ? ksGreen : (entry.1 == 1 ? .orange : .red)
-        HStack(alignment: .top, spacing: 8) {
-            Text("[\(entry.0)]")
-                .font(.system(size: 11, design: .monospaced))
-                .foregroundColor(ksSummary)
-                .frame(width: 75, alignment: .leading)
-            Circle()
-                .fill(levelColor)
-                .frame(width: 6, height: 6)
-                .padding(.top, 5)
-            Text(entry.2)
-                .font(.system(size: 12, design: .monospaced))
-                .foregroundColor(ksOnSurface.opacity(0.85))
-                .frame(maxWidth: .infinity, alignment: .leading)
+        
+        let tagColor: Color
+        let tagText: String
+        switch entry.1 {
+        case 1: tagColor = ksOrange; tagText = "WARN"
+        case 2: tagColor = ksRed; tagText = "ERR "
+        default: tagColor = ksBlue; tagText = "INFO"
         }
-        .padding(.vertical, 5)
+        
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(alignment: .top, spacing: 6) {
+                Text("[\(entry.0)]")
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundColor(ksSummary)
+                
+                Text(tagText)
+                    .font(.system(size: 11, weight: .bold, design: .monospaced))
+                    .foregroundColor(tagColor)
+                
+                Text("<\(entry.2)>")
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundColor(Color.purple.opacity(0.8))
+            }
+            Text(entry.3)
+                .font(.system(size: 12, design: .monospaced))
+                .foregroundColor(ksOnSurface.opacity(0.9))
+                .padding(.leading, 12)
+        }
+        .padding(.vertical, 4)
     }
     
     private func startTyping() {
-        Timer.scheduledTimer(withTimeInterval: 0.06, repeats: true) { t in
+        Timer.scheduledTimer(withTimeInterval: 0.08, repeats: true) { t in
             if visibleCount < entries.count {
                 visibleCount += 1
             } else {

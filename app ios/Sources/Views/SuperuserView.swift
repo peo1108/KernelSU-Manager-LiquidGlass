@@ -144,25 +144,25 @@ struct SuperuserView: View {
                     .foregroundColor(ksOnSurface)
                     .lineLimit(1)
                 Text(app.bundleId)
-                    .font(.system(size: 13))
+                    .font(.system(size: 12, design: .monospaced))
                     .foregroundColor(ksSummary)
                     .lineLimit(1)
                 if app.isRoot || app.isSystem {
                     HStack(spacing: 6) {
                         if app.isRoot {
-                            tagView("ROOT", ksRootBg, ksRootFg)
+                            tagView("[ ROOT ]", ksRootBg, ksRootFg)
                         }
                         if app.isSystem {
-                            tagView("SYSTEM", ksSystemBg, ksSystemFg)
+                            tagView("[ SYS_1000 ]", ksSystemBg, ksSystemFg)
                         }
                     }
-                    .padding(.top, 2)
+                    .padding(.top, 4)
                 }
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color.white.opacity(0.3))
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(Color.white.opacity(0.2))
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 16)
@@ -174,11 +174,12 @@ struct SuperuserView: View {
     @ViewBuilder
     private func tagView(_ text: String, _ bg: Color, _ fg: Color) -> some View {
         Text(text)
-            .font(.system(size: 10, weight: .bold))
+            .font(.system(size: 10, weight: .bold, design: .monospaced))
             .foregroundColor(fg)
-            .padding(.horizontal, 7)
-            .padding(.vertical, 3)
-            .background(bg)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 4)
+            .background(bg.opacity(0.8))
             .clipShape(RoundedRectangle(cornerRadius: 6))
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(fg.opacity(0.3), lineWidth: 0.5))
     }
 }

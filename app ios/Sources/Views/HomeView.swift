@@ -1,207 +1,186 @@
 import SwiftUI
 import UIKit
 
-// MARK: - KSU Miuix Color Constants (Dark Theme)
 private let ksGreen = Color(red: 0.21, green: 0.82, blue: 0.40)
 private let ksGreenBg = Color(red: 0.10, green: 0.22, blue: 0.15)
 private let ksSurface05 = Color.white.opacity(0.05)
 private let ksSummary = Color.white.opacity(0.55)
 private let ksOnSurface = Color.white
+private let ksCyan = Color.cyan
+private let ksRed = Color.red
 
 struct HomeView: View {
     var body: some View {
         VStack(spacing: 0) {
-            // Custom Top Bar Structure
             HStack {
                 Text("KernelSU")
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(ksOnSurface)
                 Spacer()
+                Image(systemName: "cpu")
+                    .font(.system(size: 24))
+                    .foregroundColor(ksGreen)
             }
             .padding(.horizontal, 16)
-            .padding(.top, 16) // Top safe area should be handled by MainTabView ignoresSafeArea, but we have safe top inset
+            .padding(.top, 16)
             
             ScrollView {
-                VStack(spacing: 12) {
+                VStack(spacing: 16) {
                     Spacer().frame(height: 4)
                     
-                    // MARK: - Status Card Row (Working + Superuser/Module)
+                    // MARK: - Main Status Card
                     HStack(spacing: 12) {
-                        // Left: Working Status Card (3D Parallax)
-                        ParallaxWorkingCard()
+                        workingCard
                         
-                        // Right: Superuser + Module count cards
                         VStack(spacing: 12) {
-                            MiniStatCard(title: "Superuser", count: "8")
-                            MiniStatCard(title: "Module", count: "14")
+                            statCard(title: "Superuser", count: "8", icon: "shield.fill", color: ksCyan)
+                            statCard(title: "Modules", count: "14", icon: "puzzlepiece.extension.fill", color: .purple)
                         }
                         .frame(maxWidth: .infinity)
                     }
-                    .frame(height: 175)
+                    .frame(height: 160)
                     
-                    // MARK: - Info Card
-                    VStack(alignment: .leading, spacing: 0) {
-                        InfoRow(title: "Kernel", value: "6.6.75-android14-11")
-                        InfoRow(title: "Manager version", value: "1.0.0 (10000)")
-                        InfoRow(title: "SELinux status", value: "Enforcing")
-                    }
-                    .padding(16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(ksSurface05)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    
-                    // MARK: - Donate Card
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Support development")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(ksOnSurface)
-                            Text("If you like KernelSU, consider supporting its development")
-                                .font(.system(size: 14))
+                    // MARK: - System Dashboard (Apple Internal Style)
+                    VStack(spacing: 0) {
+                        HStack {
+                            Image(systemName: "terminal.fill")
                                 .foregroundColor(ksSummary)
-                        }
-                        Spacer()
-                    }
-                    .padding(16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(ksSurface05)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    
-                    // MARK: - Learn More Card
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Learn KernelSU")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(ksOnSurface)
-                            Text("Click to learn more about KernelSU")
-                                .font(.system(size: 14))
+                            Text("SYSTEM DIAGNOSTICS")
+                                .font(.system(size: 13, weight: .semibold, design: .monospaced))
                                 .foregroundColor(ksSummary)
+                            Spacer()
                         }
-                        Spacer()
-                        Image(systemName: "link")
-                            .foregroundColor(ksOnSurface)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        
+                        VStack(spacing: 0) {
+                            diagRow(title: "Kernel Version", value: "Linux 6.6.75-gki", statusColor: .clear)
+                            diagRow(title: "SELinux State", value: "Enforcing (Active)", statusColor: ksGreen)
+                            diagRow(title: "System Uptime", value: "4d 12h 03m 44s", statusColor: .clear)
+                            diagRow(title: "Root Daemon", value: "ksud (PID 482)", statusColor: ksCyan)
+                            diagRow(title: "Mount Path", value: "/data/adb/ksu", statusColor: .clear, noDivider: true)
+                        }
+                        .padding(.vertical, 4)
+                        .background(ksSurface05)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 0.5))
                     }
-                    .padding(16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(ksSurface05)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
                     
-                    Spacer().frame(height: 100) // Padding for floating bottom bar
+                    // MARK: - Action Cards
+                    actionCard(title: "Safe Mode Reboot", desc: "Temporarily disable all modules", icon: "exclamationmark.triangle.fill", color: .orange)
+                    actionCard(title: "Flash ZIP/IMG", desc: "Install an update directly to boot partition", icon: "bolt.fill", color: ksRed)
+                    
+                    Spacer().frame(height: 100)
                 }
                 .padding(.horizontal, 12)
             }
         }
     }
-}
-
-// MARK: - 3D Parallax Working Card
-private struct ParallaxWorkingCard: View {
-    @State private var dragAmount = CGSize.zero
-    @State private var isDragging = false
     
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            // Green-tinted background
+    private var workingCard: some View {
+        ZStack(alignment: .bottomTrailing) {
             RoundedRectangle(cornerRadius: 16)
-                .fill(ksGreenBg.opacity(0.1))
-                .overlay(
-                    // Glare effect
-                    LinearGradient(
-                        colors: [.white.opacity(0.15), .clear],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .opacity(isDragging ? 1 : 0)
-                )
+                .fill(ksGreenBg.opacity(0.5))
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(ksGreen.opacity(0.3), lineWidth: 1))
             
-            // Large checkmark icon
-            VStack {
-                Spacer()
+            VStack(alignment: .leading) {
                 HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Working")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(ksGreen)
+                        Text("v1.0.0-release")
+                            .font(.system(size: 12, design: .monospaced))
+                            .foregroundColor(ksGreen.opacity(0.7))
+                    }
                     Spacer()
-                    Image(systemName: "checkmark.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 170, height: 170)
-                        .foregroundColor(ksGreen.opacity(0.8))
-                        .offset(x: 38, y: 45)
                 }
-            }
-            
-            // Text overlay
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Working")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(ksOnSurface)
-                Text("Version 12345")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(ksSummary)
+                Spacer()
             }
             .padding(16)
+            
+            Image(systemName: "checkmark.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 90, height: 90)
+                .foregroundColor(ksGreen.opacity(0.4))
+                .offset(x: 20, y: 20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        
-        // 3D Parallax Transformations
-        .rotation3DEffect(.degrees(Double(dragAmount.width / -10)), axis: (x: 0, y: 1, z: 0))
-        .rotation3DEffect(.degrees(Double(dragAmount.height / 10)), axis: (x: 1, y: 0, z: 0))
-        .scaleEffect(isDragging ? 0.98 : 1.0)
-        
-        .gesture(
-            DragGesture()
-                .onChanged { value in
-                    withAnimation(.spring(response: 0.1, dampingFraction: 0.6)) {
-                        dragAmount = value.translation
-                        isDragging = true
-                    }
-                }
-                .onEnded { _ in
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                        dragAmount = .zero
-                        isDragging = false
-                    }
-                }
-        )
     }
-}
-
-// MARK: - Mini Stat Card
-private struct MiniStatCard: View {
-    let title: String
-    let count: String
     
-    var body: some View {
+    private func statCard(title: String, count: String, icon: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .font(.system(size: 15, weight: .medium))
-                .foregroundColor(ksSummary)
-            Spacer().frame(height: 4)
+            HStack {
+                Text(title)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(ksSummary)
+                Spacer()
+                Image(systemName: icon)
+                    .foregroundColor(color.opacity(0.8))
+            }
+            Spacer().frame(height: 8)
             Text(count)
-                .font(.system(size: 26, weight: .semibold))
+                .font(.system(size: 28, weight: .bold, design: .rounded))
                 .foregroundColor(ksOnSurface)
         }
         .padding(16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(ksSurface05)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 0.5))
     }
-}
-
-// MARK: - Info Row
-private struct InfoRow: View {
-    let title: String
-    let value: String
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(ksOnSurface)
-            Text(value)
-                .font(.system(size: 14))
+    private func diagRow(title: String, value: String, statusColor: Color, noDivider: Bool = false) -> some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text(title)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(ksOnSurface)
+                Spacer()
+                if statusColor != .clear {
+                    Circle().fill(statusColor).frame(width: 6, height: 6)
+                }
+                Text(value)
+                    .font(.system(size: 13, design: .monospaced))
+                    .foregroundColor(ksSummary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            
+            if !noDivider {
+                Rectangle()
+                    .fill(Color.white.opacity(0.06))
+                    .frame(height: 0.5)
+                    .padding(.leading, 16)
+            }
+        }
+    }
+    
+    private func actionCard(title: String, desc: String, icon: String, color: Color) -> some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Circle().fill(color.opacity(0.15)).frame(width: 40, height: 40)
+                Image(systemName: icon).foregroundColor(color)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(ksOnSurface)
+                Text(desc)
+                    .font(.system(size: 13))
+                    .foregroundColor(ksSummary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .bold))
                 .foregroundColor(ksSummary)
         }
-        .padding(.vertical, 6)
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(ksSurface05)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 0.5))
     }
 }

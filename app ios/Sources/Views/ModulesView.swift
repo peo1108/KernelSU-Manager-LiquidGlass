@@ -5,19 +5,27 @@ private let ksSurface05 = Color.white.opacity(0.05)
 private let ksOnSurface = Color.white
 private let ksSummary = Color.white.opacity(0.55)
 private let ksGreen = Color(red: 0.21, green: 0.82, blue: 0.40)
+private let ksRed = Color.red
+private let ksYellow = Color.yellow
 
 struct ModulesView: View {
-    @State private var mod1On: Bool = true
-    @State private var mod2On: Bool = true
-    @State private var mod3On: Bool = true
-    @State private var mod4On: Bool = true
-    @State private var mod5On: Bool = true
-    @State private var mod6On: Bool = false
-    @State private var mod7On: Bool = true
-    @State private var mod8On: Bool = false
-    @State private var mod9On: Bool = true
-    @State private var mod10On: Bool = false
-    @State private var showInstallSheet: Bool = false
+    @State private var mods: [Bool] = [true, true, true, false, true, false, true, false, true, false]
+    @State private var showConfirm = false
+    @State private var pendingToggleIndex: Int? = nil
+    @State private var showInstallSheet = false
+    
+    let moduleData = [
+        ("Zygisk - LSPosed", "v1.9.2-release", "ART hooking framework", false),
+        ("Shamiko", "v1.1.1-182", "Hide Magisk root, Zygisk", false),
+        ("PlayIntegrityFix", "v17.9", "Pass Device verdict", false),
+        ("Tricky Store", "v1.2.4", "Generate valid certificates", true), // Dangerous
+        ("ZygiskNext", "v1.3.1", "Standalone Zygisk API", false),
+        ("BootloopSaver", "v3.1", "Save from bootloops", true), // Dangerous
+        ("BusyBox NDK", "v1.36.1", "Sys binary tools", false),
+        ("Font Manager", "v5.10.0", "Change system font", false),
+        ("SafetyNet Fix", "v3.0", "Legacy SafetyNet", false),
+        ("ACC", "v2024.6", "Advanced battery logic", true) // Dangerous
+    ]
     
     var body: some View {
         VStack(spacing: 0) {
@@ -26,97 +34,100 @@ struct ModulesView: View {
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(ksOnSurface)
                 Spacer()
+                Button(action: { showInstallSheet = true }) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(ksGreen)
+                        .padding(8)
+                        .background(ksGreen.opacity(0.15))
+                        .clipShape(Circle())
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 16)
+            .padding(.bottom, 8)
             
             ScrollView {
                 VStack(spacing: 12) {
-                    Spacer().frame(height: 4)
-                    
-                    Button(action: { showInstallSheet = true }) {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.system(size: 20))
-                            Text("Install Module")
-                                .font(.system(size: 16, weight: .semibold))
-                            Spacer()
-                            Image(systemName: "folder.fill")
-                        }
-                        .foregroundColor(ksGreen)
-                        .padding(16)
-                        .background(ksGreen.opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(ksGreen.opacity(0.3), lineWidth: 1))
+                    ForEach(0..<10, id: \.self) { i in
+                        let data = moduleData[i]
+                        moduleCard(index: i, title: data.0, ver: data.1, desc: data.2, isDangerous: data.3)
                     }
-                    
-                    moduleCard(title: "Zygisk - LSPosed", ver: "v1.9.2", author: "LSPosed Developers", desc: "ART hooking framework with Xposed-compatible API.", isOn: $mod1On)
-                    moduleCard(title: "Shamiko", ver: "v1.1.1", author: "LSPosed Developers", desc: "Hide Magisk root, Zygisk itself and Zygisk modules.", isOn: $mod2On)
-                    moduleCard(title: "PlayIntegrityFix", ver: "v17.9", author: "chiteroman", desc: "Fix Play Integrity verdicts to pass Device verdict.", isOn: $mod3On)
-                    moduleCard(title: "Tricky Store", ver: "v1.2.4", author: "5ec1cff", desc: "Generate valid certificate for STRONG verdict.", isOn: $mod4On)
-                    moduleCard(title: "ZygiskNext", ver: "v1.3.1", author: "Dr-TSNG", desc: "Standalone Zygisk API support for KernelSU.", isOn: $mod5On)
-                    moduleCard(title: "BootloopSaver", ver: "v3.1", author: "Jeevuz", desc: "Disables modules after repeated boot failures.", isOn: $mod6On)
-                    moduleCard(title: "BusyBox NDK", ver: "v1.36.1", author: "osm0sis", desc: "BusyBox binary with full SELinux support.", isOn: $mod7On)
-                    moduleCard(title: "Font Manager", ver: "v5.10.0", author: "mModule", desc: "Change system font systemlessly.", isOn: $mod8On)
-                    moduleCard(title: "SafetyNet Fix", ver: "v3.0", author: "kdrag0n", desc: "Fix SafetyNet on unlocked bootloaders.", isOn: $mod9On)
-                    moduleCard(title: "ACC", ver: "v2024.6", author: "VR-25", desc: "Advanced charging controller for Android.", isOn: $mod10On)
-                    
                     Spacer().frame(height: 100)
                 }
                 .padding(.horizontal, 12)
             }
-            .sheet(isPresented: $showInstallSheet) {
-                VStack(spacing: 20) {
-                    Image(systemName: "doc.zipper")
-                        .font(.system(size: 60))
-                        .foregroundColor(ksGreen)
-                    Text("Select a Module ZIP")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(ksOnSurface)
-                    Button("Browse Files") { showInstallSheet = false }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 32)
-                        .padding(.vertical, 12)
-                        .background(ksGreen)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.black)
+        }
+        .alert("System Modification", isPresented: $showConfirm) {
+            Button("Cancel", role: .cancel) {
+                if let idx = pendingToggleIndex { mods[idx].toggle() }
             }
+            Button("Proceed", role: .destructive) {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                // Action allowed
+            }
+        } message: {
+            Text("This module interacts deeply with the kernel. Enabling it incorrectly may cause a bootloop.")
         }
     }
     
     @ViewBuilder
-    private func moduleCard(title: String, ver: String, author: String, desc: String, isOn: Binding<Bool>) -> some View {
+    private func moduleCard(index: Int, title: String, ver: String, desc: String, isDangerous: Bool) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(title)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(isOn.wrappedValue ? ksOnSurface : ksOnSurface.opacity(0.5))
-                        .lineLimit(1)
-                    Text("\(ver) by @\(author)")
-                        .font(.system(size: 12))
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 6) {
+                        Text(title)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(mods[index] ? ksOnSurface : ksSummary)
+                        
+                        if isDangerous {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(ksYellow)
+                        }
+                    }
+                    Text(ver)
+                        .font(.system(size: 11, design: .monospaced))
                         .foregroundColor(ksSummary)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 2)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(4)
                 }
                 Spacer()
-                Toggle("", isOn: isOn)
-                    .labelsHidden()
-                    .tint(ksGreen)
+                
+                Toggle("", isOn: Binding(
+                    get: { mods[index] },
+                    set: { newVal in
+                        mods[index] = newVal
+                        if newVal && isDangerous {
+                            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+                            pendingToggleIndex = index
+                            showConfirm = true
+                        } else {
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
+                    }
+                ))
+                .labelsHidden()
+                .tint(ksGreen)
             }
+            
             Rectangle()
                 .fill(Color.white.opacity(0.08))
                 .frame(height: 0.5)
-                .padding(.vertical, 8)
+                .padding(.vertical, 10)
+            
             Text(desc)
-                .font(.system(size: 14))
+                .font(.system(size: 13))
                 .foregroundColor(ksSummary)
-                .lineLimit(3)
+                .lineLimit(2)
         }
         .padding(16)
         .background(ksSurface05)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 0.5))
-        .opacity(isOn.wrappedValue ? 1 : 0.7)
+        .opacity(mods[index] ? 1 : 0.7)
     }
 }
