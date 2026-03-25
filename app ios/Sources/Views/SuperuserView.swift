@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - Miuix Color Constants
 private let ksSurface05 = Color.white.opacity(0.05)
@@ -16,7 +17,7 @@ private let appIconMap: [String: (icon: String, colors: [Color])] = [
     "Messenger": ("message.fill", [Color.purple, Color.blue]),
     "PUBG MOBILE": ("gamecontroller.fill", [Color.orange, Color.yellow]),
     "Instagram": ("camera.fill", [Color.purple, Color.orange]),
-    "Twitter": ("bird.fill", [Color.cyan, Color.blue]),
+    "Twitter": ("at", [Color.cyan, Color.blue]),
     "YouTube": ("play.rectangle.fill", [Color.red, Color.red.opacity(0.7)]),
     "Telegram": ("paperplane.fill", [Color.blue, Color.cyan]),
     "WhatsApp": ("phone.fill", [Color.green, Color.green.opacity(0.7)]),
@@ -40,12 +41,12 @@ private let appIconMap: [String: (icon: String, colors: [Color])] = [
     "Photos": ("photo.fill", [Color.white, Color.gray]),
     "App Store": ("bag.fill", [Color.blue, Color.blue.opacity(0.7)]),
     "Mail": ("envelope.fill", [Color.blue, Color.blue.opacity(0.7)]),
-    "Zalo": ("message.badge.filled.fill", [Color.blue, Color.cyan]),
+    "Zalo": ("ellipsis.message.fill", [Color.blue, Color.cyan]),
     "Shopee": ("bag.fill", [Color.orange, Color.red]),
     "Lazada": ("cart.fill", [Color.blue, Color.purple]),
     "Tiki": ("bag.fill", [Color.blue, Color.cyan]),
     "Grab": ("car.fill", [Color.green, Color.green.opacity(0.7)]),
-    "Gojek": ("scooter", [Color.green, Color.green.opacity(0.7)]),
+    "Gojek": ("bicycle", [Color.green, Color.green.opacity(0.7)]),
     "CapCut": ("scissors", [Color.white, Color.gray]),
     "Free Fire": ("flame.fill", [Color.orange, Color.red]),
     "Roblox": ("cube.fill", [Color.red, Color.gray]),
@@ -61,7 +62,7 @@ private let appIconMap: [String: (icon: String, colors: [Color])] = [
     "Bumble": ("heart.fill", [Color.yellow, Color.orange]),
     "WeChat": ("bubble.left.and.bubble.right.fill", [Color.green, Color.green.opacity(0.7)]),
     "LINE": ("message.fill", [Color.green, Color.green.opacity(0.7)]),
-    "Shazam": ("shazam.logo.fill", [Color.blue, Color.cyan]),
+    "Shazam": ("waveform.circle.fill", [Color.blue, Color.cyan]),
 ]
 
 struct SuperuserView: View {

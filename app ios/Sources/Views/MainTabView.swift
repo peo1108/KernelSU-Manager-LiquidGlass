@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import LocalAuthentication
 
 // MARK: - iOS 26 Floating Tab Bar Constants

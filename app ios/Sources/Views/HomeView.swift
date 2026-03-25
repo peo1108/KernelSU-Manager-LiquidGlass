@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - KSU Miuix Color Constants (Dark Theme)
 private let ksGreen = Color(red: 0.21, green: 0.82, blue: 0.40)
