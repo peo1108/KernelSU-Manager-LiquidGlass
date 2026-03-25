@@ -12,11 +12,15 @@ struct MainTabView: View {
     
     var body: some View {
         ZStack {
-            // Real wallpaper background from back.png
-            Image("back")
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
+            // Real wallpaper background constrained to screen bounds
+            GeometryReader { geo in
+                Image("back")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .clipped()
+            }
+            .ignoresSafeArea()
             
             Rectangle()
                 .fill(.ultraThinMaterial)
