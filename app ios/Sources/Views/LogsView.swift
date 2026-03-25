@@ -9,18 +9,40 @@ private let ksGreen = Color(red: 0.21, green: 0.82, blue: 0.40)
 struct LogsView: View {
     let logEntries: [LogEntry] = [
         LogEntry(time: "00:00:01", level: .info, msg: "KernelSU version: 12345"),
-        LogEntry(time: "00:00:01", level: .info, msg: "Starting ksud..."),
-        LogEntry(time: "00:00:02", level: .info, msg: "Loading modules from /data/adb/modules"),
-        LogEntry(time: "00:00:02", level: .info, msg: "Loaded: Zygisk - LSPosed"),
-        LogEntry(time: "00:00:02", level: .info, msg: "Loaded: Shamiko"),
-        LogEntry(time: "00:00:02", level: .info, msg: "Loaded: PlayIntegrityFix"),
-        LogEntry(time: "00:00:03", level: .info, msg: "Injecting into zygote..."),
-        LogEntry(time: "00:00:03", level: .info, msg: "Done! System is ready."),
-        LogEntry(time: "00:01:45", level: .warn, msg: "Request SU: com.zhiliaoapp.musically → GRANTED"),
-        LogEntry(time: "00:02:10", level: .error, msg: "Request SU: com.facebook.Facebook → DENIED"),
-        LogEntry(time: "00:05:22", level: .info, msg: "Module action: Shamiko hiding root from com.google.android.gms"),
-        LogEntry(time: "00:08:33", level: .info, msg: "SELinux context restored for uid 10085"),
-        LogEntry(time: "00:12:01", level: .warn, msg: "Mount namespace overlays applied: 3 modules"),
+        LogEntry(time: "00:00:01", level: .info, msg: "Build type: Release (GKI)"),
+        LogEntry(time: "00:00:01", level: .info, msg: "Starting ksud daemon..."),
+        LogEntry(time: "00:00:01", level: .info, msg: "SELinux mode: Enforcing"),
+        LogEntry(time: "00:00:02", level: .info, msg: "Mounting /data/adb/modules overlay"),
+        LogEntry(time: "00:00:02", level: .info, msg: "Loading module: Zygisk - LSPosed v1.9.2"),
+        LogEntry(time: "00:00:02", level: .info, msg: "Loading module: Shamiko v1.1.1"),
+        LogEntry(time: "00:00:02", level: .info, msg: "Loading module: PlayIntegrityFix v17.9"),
+        LogEntry(time: "00:00:02", level: .info, msg: "Loading module: Tricky Store v1.2.4"),
+        LogEntry(time: "00:00:02", level: .info, msg: "Loading module: ZygiskNext v1.3.1"),
+        LogEntry(time: "00:00:02", level: .info, msg: "Loading module: BusyBox NDK v1.36.1"),
+        LogEntry(time: "00:00:03", level: .info, msg: "All 6 modules loaded successfully"),
+        LogEntry(time: "00:00:03", level: .info, msg: "Zygisk injection started"),
+        LogEntry(time: "00:00:03", level: .info, msg: "Hooking app_process for UID isolation"),
+        LogEntry(time: "00:00:04", level: .info, msg: "Mount namespace set for 10 apps"),
+        LogEntry(time: "00:00:04", level: .info, msg: "System is ready. Waiting for SU requests..."),
+        LogEntry(time: "00:01:12", level: .warn, msg: "SU request: com.zhiliaoapp.musically (UID 10085)"),
+        LogEntry(time: "00:01:12", level: .info, msg: "SU GRANTED → TikTok (ROOT profile applied)"),
+        LogEntry(time: "00:02:10", level: .error, msg: "SU DENIED → com.facebook.Facebook (UID 10032)"),
+        LogEntry(time: "00:02:10", level: .info, msg: "User denied SU for Facebook via notification"),
+        LogEntry(time: "00:03:45", level: .info, msg: "Shamiko: Hiding root from com.google.android.gms"),
+        LogEntry(time: "00:03:45", level: .info, msg: "Shamiko: DenyList applied for 24 packages"),
+        LogEntry(time: "00:04:01", level: .info, msg: "PlayIntegrityFix: Spoofed device fingerprint"),
+        LogEntry(time: "00:04:01", level: .info, msg: "PlayIntegrityFix: DEVICE verdict → PASS"),
+        LogEntry(time: "00:05:22", level: .warn, msg: "SU request: com.facebook.Messenger (UID 10033)"),
+        LogEntry(time: "00:05:22", level: .info, msg: "SU GRANTED → Messenger (ROOT profile applied)"),
+        LogEntry(time: "00:08:33", level: .info, msg: "SELinux context restored for UID 10085"),
+        LogEntry(time: "00:10:15", level: .info, msg: "Tricky Store: Certificate chain generated"),
+        LogEntry(time: "00:10:15", level: .info, msg: "Tricky Store: STRONG verdict → PASS"),
+        LogEntry(time: "00:12:01", level: .info, msg: "Overlay mount refresh: 6 modules active"),
+        LogEntry(time: "00:15:30", level: .warn, msg: "Process com.tencent.ig requesting UID change"),
+        LogEntry(time: "00:15:30", level: .error, msg: "SU DENIED → PUBG MOBILE (not in allowlist)"),
+        LogEntry(time: "00:20:00", level: .info, msg: "Periodic health check: system nominal"),
+        LogEntry(time: "00:25:44", level: .info, msg: "LSPosed: Hooked 142 methods across 8 modules"),
+        LogEntry(time: "00:30:01", level: .info, msg: "Battery optimization: ksud idle, CPU 0.1%"),
     ]
     
     var body: some View {
@@ -29,7 +51,6 @@ struct LogsView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(logEntries.indices, id: \.self) { i in
                         LogRow(entry: logEntries[i])
-                        
                         if i < logEntries.count - 1 {
                             Rectangle()
                                 .fill(Color.white.opacity(0.04))
@@ -64,9 +85,9 @@ private struct LogRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Text("[\(entry.time)]")
-                .font(.system(size: 12, design: .monospaced))
+                .font(.system(size: 11, design: .monospaced))
                 .foregroundColor(ksSummary)
-                .frame(width: 80, alignment: .leading)
+                .frame(width: 75, alignment: .leading)
             
             Circle()
                 .fill(entry.level.color)
@@ -74,11 +95,11 @@ private struct LogRow: View {
                 .padding(.top, 5)
             
             Text(entry.msg)
-                .font(.system(size: 13, design: .monospaced))
+                .font(.system(size: 12, design: .monospaced))
                 .foregroundColor(ksOnSurface.opacity(0.85))
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, 5)
     }
 }
 
