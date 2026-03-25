@@ -5,17 +5,11 @@ struct MainTabView: View {
     
     var body: some View {
         ZStack {
-            // Liquid Glass Background Backdrop (Fake Wallpaper)
-            LinearGradient(
-                colors: [
-                    Color(red: 0.1, green: 0.3, blue: 0.2),
-                    Color(red: 0.05, green: 0.4, blue: 0.3),
-                    Color.black
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Real wallpaper background from back.png
+            Image("back")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
             
             Rectangle()
                 .fill(.ultraThinMaterial)
