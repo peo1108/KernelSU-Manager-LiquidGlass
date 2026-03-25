@@ -7,7 +7,7 @@ private let ksSummary = Color.white.opacity(0.55)
 private let ksGreen = Color(red: 0.21, green: 0.82, blue: 0.40)
 
 struct LogsView: View {
-    let logEntries: [LogEntry] = [
+    let rawLogEntries: [LogEntry] = [
         LogEntry(time: "00:00:01", level: .info, msg: "KernelSU version: 12345"),
         LogEntry(time: "00:00:01", level: .info, msg: "Build type: Release (GKI)"),
         LogEntry(time: "00:00:01", level: .info, msg: "Starting ksud daemon..."),
@@ -45,43 +45,115 @@ struct LogsView: View {
         LogEntry(time: "00:30:01", level: .info, msg: "Battery optimization: ksud idle, CPU 0.1%"),
     ]
     
+    @State private var visibleLogCount = 0
+    
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(logEntries.indices, id: \.self) { i in
-                        LogRow(entry: logEntries[i])
-                        if i < logEntries.count - 1 {
-                            Rectangle()
-                                .fill(Color.white.opacity(0.04))
-                                .frame(height: 0.5)
-                        }
-                    }
+        VStack(spacing: 0) {
+            // Custom Header
+            HStack {
+                Text("Logs")
+                    .font(.system(size: 34, weight: .bold))
+                    .foregroundColor(ksOnSurface)
+                Spacer()
+                
+                Button(action: {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                }) {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(ksGreen)
+                        .font(.system(size: 20))
                 }
-                .padding(12)
-                .background(ksSurface05)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 12)
             }
-            .background(Color.clear)
-            .navigationTitle("Logs")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {}) {
-                        Image(systemName: "square.and.arrow.up")
-                            .foregroundColor(ksGreen)
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 8)
+            
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(0..<visibleLogCount, id: \.self) { i in
+                            LogRow(entry: rawLogEntries[i])
+                                .id(i)
+                            
+                            if i < rawLogEntries.count - 1 {
+                                Rectangle()
+                                    .fill(Color.white.opacity(0.04))
+                                    .frame(height: 0.5)
+                            }
+                        }
+                        
+                        // Blinking cursor representing active terminal stream
+                        HStack {
+                            Text(">")
+                                .font(.system(size: 13, design: .monospaced))
+                                .foregroundColor(ksGreen)
+                            BlinkingCursor()
+                        }
+                        .padding(.vertical, 8)
+                        .id(rawLogEntries.count)
+                    }
+                    .padding(12)
+                    .background(ksSurface05)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    // Glass border wrapper overlay
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+                    )
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    
+                    Spacer().frame(height: 100)
+                }
+                .onChange(of: visibleLogCount) { _ in
+                    withAnimation {
+                        proxy.scrollTo(visibleLogCount, anchor: .bottom)
                     }
                 }
             }
         }
+        .onAppear {
+            visibleLogCount = 0
+            startTypingEffect()
+        }
+    }
+    
+    // Typing Effect Logic
+    private func startTypingEffect() {
+        Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
+            if visibleLogCount < rawLogEntries.count {
+                visibleLogCount += 1
+                if rawLogEntries[visibleLogCount - 1].level == .error {
+                    UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+                } else if visibleLogCount % 5 == 0 {
+                    UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                }
+            } else {
+                timer.invalidate()
+            }
+        }
+    }
+}
+
+// MARK: - Blinking Cursor
+private struct BlinkingCursor: View {
+    @State private var isVisible = true
+    var body: some View {
+        Rectangle()
+            .fill(ksGreen)
+            .frame(width: 8, height: 16)
+            .opacity(isVisible ? 1 : 0)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                    isVisible = false
+                }
+            }
     }
 }
 
 // MARK: - Log Row
 private struct LogRow: View {
     let entry: LogEntry
-    
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Text("[\(entry.time)]")
@@ -93,6 +165,8 @@ private struct LogRow: View {
                 .fill(entry.level.color)
                 .frame(width: 6, height: 6)
                 .padding(.top, 5)
+                // Glow effect on error circles
+                .shadow(color: entry.level == .error ? Color.red : Color.clear, radius: 4, x: 0, y: 0)
             
             Text(entry.msg)
                 .font(.system(size: 12, design: .monospaced))
@@ -106,7 +180,6 @@ private struct LogRow: View {
 // MARK: - Data Models
 enum LogLevel {
     case info, warn, error
-    
     var color: Color {
         switch self {
         case .info: return Color(red: 0.21, green: 0.82, blue: 0.40)

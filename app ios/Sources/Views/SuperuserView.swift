@@ -67,6 +67,7 @@ private let appIconMap: [String: (icon: String, colors: [Color])] = [
 struct SuperuserView: View {
     @StateObject private var appManager = AppListManager()
     @State private var searchText = ""
+    @State private var isLoaded = false
     
     var filteredApps: [AppInfo] {
         if searchText.isEmpty {
@@ -80,18 +81,104 @@ struct SuperuserView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    Spacer().frame(height: 6)
-                    ForEach(filteredApps, id: \.id) { app in
-                        GroupItemRow(app: app)
+        VStack(spacing: 0) {
+            // Custom Header
+            HStack {
+                Text("Superuser")
+                    .font(.system(size: 34, weight: .bold))
+                    .foregroundColor(ksOnSurface)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            
+            // Custom Search Bar
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(ksSummary)
+                TextField("Search apps", text: $searchText)
+                    .foregroundColor(ksOnSurface)
+                    .accentColor(Color(red: 0.21, green: 0.82, blue: 0.40))
+            }
+            .padding(10)
+            .background(Color.white.opacity(0.1))
+            .cornerRadius(10)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            
+            if !isLoaded {
+                // Skeleton Loader fake
+                ScrollView {
+                    VStack(spacing: 12) {
+                        HStack {
+                            Text("Fetching root permissions from Kernel...")
+                                .font(.system(size: 12, design: .monospaced))
+                                .foregroundColor(Color(red: 0.21, green: 0.82, blue: 0.40))
+                            Spacer()
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 8)
+                        
+                        ForEach(0..<8, id: \.self) { _ in
+                            SkeletonAppRow()
+                        }
+                    }
+                    .padding(.top, 6)
+                }
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                        withAnimation(.easeOut(duration: 0.4)) {
+                            isLoaded = true
+                        }
+                    }
+                }
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        Spacer().frame(height: 2)
+                        ForEach(filteredApps, id: \.id) { app in
+                            GroupItemRow(app: app)
+                        }
+                        Spacer().frame(height: 100) // Float tab bar padding
                     }
                 }
             }
-            .background(Color.clear)
-            .navigationTitle("Superuser")
-            .searchable(text: $searchText, prompt: "Search apps")
+        }
+    }
+}
+
+// MARK: - Skeleton Loader Row
+private struct SkeletonAppRow: View {
+    @State private var phase: CGFloat = 0
+    
+    var body: some View {
+        HStack(spacing: 0) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.1))
+                .frame(width: 48, height: 48)
+                .padding(.trailing, 14)
+            
+            VStack(alignment: .leading, spacing: 6) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.white.opacity(0.1))
+                    .frame(width: 120, height: 16)
+                
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.white.opacity(0.1))
+                    .frame(width: 180, height: 12)
+            }
+            Spacer()
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .background(ksSurface05)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal, 12)
+        .opacity(0.5 + 0.5 * sin(phase))
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                phase = .pi
+            }
         }
     }
 }
@@ -103,7 +190,6 @@ private struct GroupItemRow: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            // App Icon with gradient background
             AppIconView(appName: app.name)
                 .padding(.trailing, 14)
             
@@ -130,9 +216,7 @@ private struct GroupItemRow: View {
                     .padding(.top, 2)
                 }
             }
-            
             Spacer()
-            
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(Color.white.opacity(0.3))
@@ -142,46 +226,32 @@ private struct GroupItemRow: View {
         .background(ksSurface05)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .padding(.horizontal, 12)
-        .padding(.bottom, 12)
         .opacity(animProgress)
         .offset(
-            x: (1 - animProgress) * 400,
-            y: (1 - animProgress) * 600
+            x: (1 - animProgress) * 50,
+            y: (1 - animProgress) * 50
         )
-        .scaleEffect(0.9 + 0.1 * animProgress)
+        .scaleEffect(0.95 + 0.05 * animProgress)
         .onAppear {
-            withAnimation(.timingCurve(0.4, 0.0, 0.2, 1.0, duration: 0.8)) {
+            withAnimation(.timingCurve(0.2, 0.8, 0.2, 1.0, duration: 0.6)) {
                 animProgress = 1
             }
         }
     }
 }
 
-// MARK: - App Icon View (SF Symbol + Gradient)
 private struct AppIconView: View {
     let appName: String
-    
     private var iconInfo: (icon: String, colors: [Color]) {
-        if let mapped = appIconMap[appName] {
-            return mapped
-        }
-        // Fallback: generate a color from the app name
+        if let mapped = appIconMap[appName] { return mapped }
         let hash = abs(appName.hashValue)
         let hue = Double(hash % 360) / 360.0
         return ("app.fill", [Color(hue: hue, saturation: 0.6, brightness: 0.8), Color(hue: hue, saturation: 0.8, brightness: 0.5)])
     }
-    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    LinearGradient(
-                        colors: iconInfo.colors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-            
+                .fill(LinearGradient(colors: iconInfo.colors, startPoint: .topLeading, endPoint: .bottomTrailing))
             Image(systemName: iconInfo.icon)
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(.white)
@@ -190,12 +260,10 @@ private struct AppIconView: View {
     }
 }
 
-// MARK: - KSU Tag
 private struct KSUTag: View {
     let text: String
     let bg: Color
     let fg: Color
-    
     var body: some View {
         Text(text)
             .font(.system(size: 10, weight: .bold))

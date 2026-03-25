@@ -37,11 +37,26 @@ struct ModulesView: View {
     @State private var showInstallSheet = false
     
     var body: some View {
-        NavigationView {
+        VStack(spacing: 0) {
+            // Custom Header
+            HStack {
+                Text("Modules")
+                    .font(.system(size: 34, weight: .bold))
+                    .foregroundColor(ksOnSurface)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            
             ScrollView {
                 VStack(spacing: 12) {
+                    Spacer().frame(height: 4)
+                    
                     // Install Module Button
-                    Button(action: { showInstallSheet = true }) {
+                    Button(action: {
+                        UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+                        showInstallSheet = true
+                    }) {
                         HStack {
                             Image(systemName: "plus.circle.fill")
                                 .font(.system(size: 20))
@@ -53,8 +68,13 @@ struct ModulesView: View {
                         }
                         .foregroundColor(ksGreen)
                         .padding(16)
-                        .background(ksGreen.opacity(0.08))
+                        .background(ksGreen.opacity(0.12))
                         .clipShape(RoundedRectangle(cornerRadius: 16))
+                        // Glow on install button
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(ksGreen.opacity(0.3), lineWidth: 1)
+                        )
                     }
                     
                     // Module Count
@@ -75,12 +95,11 @@ struct ModulesView: View {
                     ForEach($data.modules) { $module in
                         ModuleCard(module: $module)
                     }
+                    
+                    Spacer().frame(height: 100) // Float tab bar padding
                 }
                 .padding(.horizontal, 12)
-                .padding(.vertical, 12)
             }
-            .background(Color.clear)
-            .navigationTitle("Modules")
             .sheet(isPresented: $showInstallSheet) {
                 InstallModuleSheet()
             }
@@ -106,9 +125,15 @@ private struct ModuleCard: View {
                         .foregroundColor(ksSummary)
                 }
                 Spacer()
-                Toggle("", isOn: $module.enabled)
-                    .labelsHidden()
-                    .tint(ksGreen)
+                Toggle("", isOn: Binding<Bool>(
+                    get: { module.enabled },
+                    set: { newValue in
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        module.enabled = newValue
+                    }
+                ))
+                .labelsHidden()
+                .tint(ksGreen)
             }
             
             // Divider
@@ -127,6 +152,11 @@ private struct ModuleCard: View {
         .background(ksSurface05)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .opacity(module.enabled ? 1 : 0.7)
+        // Glass border 1px
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+        )
     }
 }
 
@@ -145,13 +175,10 @@ private struct InstallModuleSheet: View {
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundColor(ksOnSurface)
                 
-                Text("Choose a .zip module file from your device to install.")
-                    .font(.system(size: 14))
-                    .foregroundColor(ksSummary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-                
-                Button(action: { dismiss() }) {
+                Button(action: {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    dismiss()
+                }) {
                     Text("Browse Files")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.white)
@@ -163,7 +190,7 @@ private struct InstallModuleSheet: View {
                 .padding(.top, 8)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black)
+            .background(Color.black.ignoresSafeArea())
             .navigationTitle("Install Module")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
