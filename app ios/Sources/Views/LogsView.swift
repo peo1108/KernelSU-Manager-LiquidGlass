@@ -106,7 +106,7 @@ struct LogsView: View {
                     
                     Spacer().frame(height: 100)
                 }
-                .onChange(of: visibleLogCount) { _ in
+                .onChange(of: visibleLogCount) { newValue in
                     withAnimation {
                         proxy.scrollTo(visibleLogCount, anchor: .bottom)
                     }

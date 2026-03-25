@@ -10,60 +10,59 @@ private let ksRootFg = Color(red: 1.0, green: 0.55, blue: 0.55).opacity(0.8)
 private let ksSystemBg = Color(red: 0.20, green: 0.25, blue: 0.35).opacity(0.8)
 private let ksSystemFg = Color(red: 0.75, green: 0.80, blue: 0.95)
 
-// MARK: - App Icon Mapping
-private let appIconMap: [String: (icon: String, colors: [Color])] = [
-    "TikTok": ("music.note", [Color.pink, Color.cyan]),
-    "Facebook": ("f.square.fill", [Color.blue, Color.blue.opacity(0.7)]),
-    "Messenger": ("message.fill", [Color.purple, Color.blue]),
-    "PUBG MOBILE": ("gamecontroller.fill", [Color.orange, Color.yellow]),
-    "Instagram": ("camera.fill", [Color.purple, Color.orange]),
-    "Twitter": ("at", [Color.cyan, Color.blue]),
-    "YouTube": ("play.rectangle.fill", [Color.red, Color.red.opacity(0.7)]),
-    "Telegram": ("paperplane.fill", [Color.blue, Color.cyan]),
-    "WhatsApp": ("phone.fill", [Color.green, Color.green.opacity(0.7)]),
-    "Netflix": ("play.tv.fill", [Color.red, Color.black]),
-    "Spotify": ("waveform", [Color.green, Color.green.opacity(0.7)]),
-    "Snapchat": ("camera.viewfinder", [Color.yellow, Color.yellow.opacity(0.7)]),
-    "Discord": ("bubble.left.and.bubble.right.fill", [Color.indigo, Color.purple]),
-    "Reddit": ("antenna.radiowaves.left.and.right", [Color.orange, Color.red]),
-    "Pinterest": ("pin.fill", [Color.red, Color.red.opacity(0.8)]),
-    "Google Maps": ("map.fill", [Color.green, Color.blue]),
-    "Google Chrome": ("globe", [Color.blue, Color.red]),
-    "Gmail": ("envelope.fill", [Color.red, Color.white]),
-    "Google Photos": ("photo.stack.fill", [Color.red, Color.green]),
-    "Zoom": ("video.fill", [Color.blue, Color.blue.opacity(0.7)]),
-    "Microsoft Teams": ("person.3.fill", [Color.indigo, Color.purple]),
-    "Safari": ("safari.fill", [Color.blue, Color.cyan]),
-    "Camera": ("camera.fill", [Color.gray, Color.gray.opacity(0.7)]),
-    "Settings": ("gearshape.fill", [Color.gray, Color.gray.opacity(0.7)]),
-    "Messages": ("message.fill", [Color.green, Color.green.opacity(0.7)]),
-    "Phone": ("phone.fill", [Color.green, Color.green.opacity(0.7)]),
-    "Photos": ("photo.fill", [Color.white, Color.gray]),
-    "App Store": ("bag.fill", [Color.blue, Color.blue.opacity(0.7)]),
-    "Mail": ("envelope.fill", [Color.blue, Color.blue.opacity(0.7)]),
-    "Zalo": ("ellipsis.message.fill", [Color.blue, Color.cyan]),
-    "Shopee": ("bag.fill", [Color.orange, Color.red]),
-    "Lazada": ("cart.fill", [Color.blue, Color.purple]),
-    "Tiki": ("bag.fill", [Color.blue, Color.cyan]),
-    "Grab": ("car.fill", [Color.green, Color.green.opacity(0.7)]),
-    "Gojek": ("bicycle", [Color.green, Color.green.opacity(0.7)]),
-    "CapCut": ("scissors", [Color.white, Color.gray]),
-    "Free Fire": ("flame.fill", [Color.orange, Color.red]),
-    "Roblox": ("cube.fill", [Color.red, Color.gray]),
-    "Genshin Impact": ("sparkles", [Color.cyan, Color.purple]),
-    "Lien Quan Mobile": ("shield.fill", [Color.purple, Color.blue]),
-    "MoMo": ("creditcard.fill", [Color.pink, Color.purple]),
-    "MB Bank": ("building.columns.fill", [Color.blue, Color.purple]),
-    "Vietcombank": ("building.columns.fill", [Color.green, Color.green.opacity(0.7)]),
-    "Techcombank": ("building.columns.fill", [Color.red, Color.red.opacity(0.7)]),
-    "VNeID": ("person.text.rectangle.fill", [Color.red, Color.yellow]),
-    "VssID": ("cross.case.fill", [Color.blue, Color.green]),
-    "Tinder": ("flame.fill", [Color.orange, Color.pink]),
-    "Bumble": ("heart.fill", [Color.yellow, Color.orange]),
-    "WeChat": ("bubble.left.and.bubble.right.fill", [Color.green, Color.green.opacity(0.7)]),
-    "LINE": ("message.fill", [Color.green, Color.green.opacity(0.7)]),
-    "Shazam": ("waveform.circle.fill", [Color.blue, Color.cyan]),
-]
+// MARK: - App Icon Helper (avoid large dictionary literal that causes Swift compiler timeout)
+private func getAppIcon(for name: String) -> (icon: String, c1: Color, c2: Color) {
+    switch name {
+    case "TikTok": return ("music.note", .pink, .cyan)
+    case "Facebook": return ("f.square.fill", .blue, .blue.opacity(0.7))
+    case "Messenger": return ("message.fill", .purple, .blue)
+    case "PUBG MOBILE": return ("gamecontroller.fill", .orange, .yellow)
+    case "Instagram": return ("camera.fill", .purple, .orange)
+    case "Twitter": return ("at", .cyan, .blue)
+    case "YouTube": return ("play.rectangle.fill", .red, .red.opacity(0.7))
+    case "Telegram": return ("paperplane.fill", .blue, .cyan)
+    case "WhatsApp": return ("phone.fill", .green, .green.opacity(0.7))
+    case "Netflix": return ("play.tv.fill", .red, .black)
+    case "Spotify": return ("waveform", .green, .green.opacity(0.7))
+    case "Snapchat": return ("camera.viewfinder", .yellow, .yellow.opacity(0.7))
+    case "Discord": return ("bubble.left.and.bubble.right.fill", .indigo, .purple)
+    case "Reddit": return ("antenna.radiowaves.left.and.right", .orange, .red)
+    case "Pinterest": return ("pin.fill", .red, .red.opacity(0.8))
+    case "Google Maps": return ("map.fill", .green, .blue)
+    case "Google Chrome": return ("globe", .blue, .red)
+    case "Gmail": return ("envelope.fill", .red, .orange)
+    case "Zoom": return ("video.fill", .blue, .blue.opacity(0.7))
+    case "Safari": return ("safari.fill", .blue, .cyan)
+    case "Camera": return ("camera.fill", .gray, .gray.opacity(0.7))
+    case "Settings": return ("gearshape.fill", .gray, .gray.opacity(0.7))
+    case "Messages": return ("message.fill", .green, .green.opacity(0.7))
+    case "Phone": return ("phone.fill", .green, .green.opacity(0.7))
+    case "Photos": return ("photo.fill", .white, .gray)
+    case "App Store": return ("bag.fill", .blue, .blue.opacity(0.7))
+    case "Mail": return ("envelope.fill", .blue, .blue.opacity(0.7))
+    case "Zalo": return ("ellipsis.message.fill", .blue, .cyan)
+    case "Shopee": return ("bag.fill", .orange, .red)
+    case "Lazada": return ("cart.fill", .blue, .purple)
+    case "Grab": return ("car.fill", .green, .green.opacity(0.7))
+    case "CapCut": return ("scissors", .white, .gray)
+    case "Free Fire": return ("flame.fill", .orange, .red)
+    case "Roblox": return ("cube.fill", .red, .gray)
+    case "Genshin Impact": return ("sparkles", .cyan, .purple)
+    case "MoMo": return ("creditcard.fill", .pink, .purple)
+    case "MB Bank": return ("building.columns.fill", .blue, .purple)
+    case "Vietcombank": return ("building.columns.fill", .green, .green.opacity(0.7))
+    case "Techcombank": return ("building.columns.fill", .red, .red.opacity(0.7))
+    case "VNeID": return ("person.text.rectangle.fill", .red, .yellow)
+    case "Tinder": return ("flame.fill", .orange, .pink)
+    case "Bumble": return ("heart.fill", .yellow, .orange)
+    case "WeChat": return ("bubble.left.and.bubble.right.fill", .green, .green.opacity(0.7))
+    case "LINE": return ("message.fill", .green, .green.opacity(0.7))
+    default:
+        let hash = abs(name.hashValue)
+        let hue = Double(hash % 360) / 360.0
+        return ("app.fill", Color(hue: hue, saturation: 0.6, brightness: 0.8), Color(hue: hue, saturation: 0.8, brightness: 0.5))
+    }
+}
 
 struct SuperuserView: View {
     @StateObject private var appManager = AppListManager()
@@ -83,7 +82,6 @@ struct SuperuserView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Custom Header
             HStack {
                 Text("Superuser")
                     .font(.system(size: 34, weight: .bold))
@@ -93,7 +91,6 @@ struct SuperuserView: View {
             .padding(.horizontal, 16)
             .padding(.top, 16)
             
-            // Custom Search Bar
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(ksSummary)
@@ -108,7 +105,6 @@ struct SuperuserView: View {
             .padding(.vertical, 8)
             
             if !isLoaded {
-                // Skeleton Loader fake
                 ScrollView {
                     VStack(spacing: 12) {
                         HStack {
@@ -140,7 +136,7 @@ struct SuperuserView: View {
                         ForEach(filteredApps, id: \.id) { app in
                             GroupItemRow(app: app)
                         }
-                        Spacer().frame(height: 100) // Float tab bar padding
+                        Spacer().frame(height: 100)
                     }
                 }
             }
@@ -163,7 +159,6 @@ private struct SkeletonAppRow: View {
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color.white.opacity(0.1))
                     .frame(width: 120, height: 16)
-                
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color.white.opacity(0.1))
                     .frame(width: 180, height: 12)
@@ -199,7 +194,6 @@ private struct GroupItemRow: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(ksOnSurface)
                     .lineLimit(1)
-                
                 Text(app.bundleId)
                     .font(.system(size: 13))
                     .foregroundColor(ksSummary)
@@ -228,10 +222,7 @@ private struct GroupItemRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .padding(.horizontal, 12)
         .opacity(animProgress)
-        .offset(
-            x: (1 - animProgress) * 50,
-            y: (1 - animProgress) * 50
-        )
+        .offset(x: (1 - animProgress) * 50, y: (1 - animProgress) * 50)
         .scaleEffect(0.95 + 0.05 * animProgress)
         .onAppear {
             withAnimation(.timingCurve(0.2, 0.8, 0.2, 1.0, duration: 0.6)) {
@@ -243,17 +234,12 @@ private struct GroupItemRow: View {
 
 private struct AppIconView: View {
     let appName: String
-    private var iconInfo: (icon: String, colors: [Color]) {
-        if let mapped = appIconMap[appName] { return mapped }
-        let hash = abs(appName.hashValue)
-        let hue = Double(hash % 360) / 360.0
-        return ("app.fill", [Color(hue: hue, saturation: 0.6, brightness: 0.8), Color(hue: hue, saturation: 0.8, brightness: 0.5)])
-    }
     var body: some View {
+        let info = getAppIcon(for: appName)
         ZStack {
             RoundedRectangle(cornerRadius: 12)
-                .fill(LinearGradient(colors: iconInfo.colors, startPoint: .topLeading, endPoint: .bottomTrailing))
-            Image(systemName: iconInfo.icon)
+                .fill(LinearGradient(colors: [info.c1, info.c2], startPoint: .topLeading, endPoint: .bottomTrailing))
+            Image(systemName: info.icon)
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(.white)
         }

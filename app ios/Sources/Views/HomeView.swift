@@ -150,7 +150,7 @@ private struct ParallaxWorkingCard: View {
         .gesture(
             DragGesture()
                 .onChanged { value in
-                    withAnimation(.interactiveSpring(response: 0.1, dampingFraction: 0.6)) {
+                    withAnimation(.spring(response: 0.1, dampingFraction: 0.6)) {
                         dragAmount = value.translation
                         isDragging = true
                     }
