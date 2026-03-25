@@ -20,4 +20,4 @@ targets:
         CODE_SIGNING_ALLOWED: "NO"
         SWIFT_VERSION: "5.9"
     dependencies:
-      - framework: LocalAuthentication.framework
+      - sdk: LocalAuthentication.framework
