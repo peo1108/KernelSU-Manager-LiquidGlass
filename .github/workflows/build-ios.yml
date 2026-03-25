@@ -1,0 +1,47 @@
+name: Build iOS App
+
+on:
+  push:
+    paths:
+      - 'app ios/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        run: |
+          cd "app ios"
+          xcodegen generate
+
+      - name: Build Archive
+        run: |
+          cd "app ios"
+          xcodebuild archive \
+            -project KernelSU_iOS.xcodeproj \
+            -scheme KernelSU_iOS \
+            -configuration Release \
+            -archivePath build/KernelSU_iOS.xcarchive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Export IPA
+        run: |
+          cd "app ios"
+          mkdir -p Payload
+          cp -r build/KernelSU_iOS.xcarchive/Products/Applications/KernelSU_iOS.app Payload/
+          zip -qr KernelSU_iOS.ipa Payload
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KernelSU_iOS_unsigned
+          path: app ios/KernelSU_iOS.ipa

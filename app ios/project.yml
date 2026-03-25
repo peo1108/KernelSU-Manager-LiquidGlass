@@ -1,0 +1,18 @@
+name: KernelSU_iOS
+options:
+  bundleIdPrefix: me.weishu
+targets:
+  KernelSU_iOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Sources
+    info:
+      properties:
+        UILaunchScreen: {}
+    settings:
+      base:
+        CODE_SIGNING_REQUIRED: "NO"
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_ALLOWED: "NO"
