@@ -44,6 +44,7 @@ struct SuperuserView: View {
     @StateObject private var appManager = AppListManager()
     @State private var searchText: String = ""
     @State private var isLoaded: Bool = false
+    @State private var selectedApp: AppInfo?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -118,6 +119,9 @@ struct SuperuserView: View {
                 }
             }
         }
+        .sheet(item: $selectedApp) { app in
+            AppProfileView(app: app, iconInfo: iconForApp(app.name))
+        }
     }
     
     private func filteredApps() -> [AppInfo] {
@@ -127,47 +131,53 @@ struct SuperuserView: View {
     
     private func appRow(_ app: AppInfo) -> some View {
         let info = iconForApp(app.name)
-        return HStack(spacing: 14) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(LinearGradient(colors: [info.1, info.2], startPoint: .topLeading, endPoint: .bottomTrailing))
-                Image(systemName: info.0)
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(.white)
-            }
-            .frame(width: 48, height: 48)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(app.name)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(ksOnSurface)
-                    .lineLimit(1)
-                Text(app.bundleId)
-                    .font(.system(size: 12, design: .monospaced))
-                    .foregroundColor(ksSummary)
-                    .lineLimit(1)
-                if app.isRoot || app.isSystem {
-                    HStack(spacing: 6) {
-                        if app.isRoot {
-                            tagView("[ ROOT ]", ksRootBg, ksRootFg)
-                        }
-                        if app.isSystem {
-                            tagView("[ SYSTEM ]", ksSystemBg, ksSystemFg)
-                        }
-                    }
-                    .padding(.top, 4)
+        return Button(action: {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            selectedApp = app
+        }) {
+            HStack(spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(LinearGradient(colors: [info.1, info.2], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    Image(systemName: info.0)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundColor(.white)
                 }
+                .frame(width: 48, height: 48)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(app.name)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(ksOnSurface)
+                        .lineLimit(1)
+                    Text(app.bundleId)
+                        .font(.system(size: 12, design: .monospaced))
+                        .foregroundColor(ksSummary)
+                        .lineLimit(1)
+                    if app.isRoot || app.isSystem {
+                        HStack(spacing: 6) {
+                            if app.isRoot {
+                                tagView("[ ROOT ]", ksRootBg, ksRootFg)
+                            }
+                            if app.isSystem {
+                                tagView("[ SYSTEM ]", ksSystemBg, ksSystemFg)
+                            }
+                        }
+                        .padding(.top, 4)
+                    }
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(Color.white.opacity(0.2))
             }
-            Spacer()
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(Color.white.opacity(0.2))
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .background(ksSurface05)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .padding(.horizontal, 12)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
-        .background(ksSurface05)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .padding(.horizontal, 12)
+        .buttonStyle(.plain)
     }
     
     private func tagView(_ text: String, _ bg: Color, _ fg: Color) -> some View {
@@ -179,5 +189,122 @@ struct SuperuserView: View {
             .background(bg.opacity(0.8))
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .overlay(RoundedRectangle(cornerRadius: 6).stroke(fg.opacity(0.3), lineWidth: 0.5))
+    }
+}
+
+struct AppProfileView: View {
+    let app: AppInfo
+    let iconInfo: (String, Color, Color)
+    @Environment(\.dismiss) var dismiss
+    
+    @State private var isRootEnabled: Bool
+    @State private var unmountModules: Bool = false
+    @State private var allowStorage: Bool = true
+    
+    init(app: AppInfo, iconInfo: (String, Color, Color)) {
+        self.app = app
+        self.iconInfo = iconInfo
+        _isRootEnabled = State(initialValue: app.isRoot)
+    }
+    
+    var body: some View {
+        NavigationView {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Header
+                        VStack(spacing: 12) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(LinearGradient(colors: [iconInfo.1, iconInfo.2], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                Image(systemName: iconInfo.0)
+                                    .font(.system(size: 36, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
+                            .frame(width: 80, height: 80)
+                            .shadow(color: iconInfo.1.opacity(0.3), radius: 10, y: 5)
+                            
+                            VStack(spacing: 4) {
+                                Text(app.name)
+                                    .font(.system(size: 22, weight: .bold))
+                                    .foregroundColor(.white)
+                                Text(app.bundleId)
+                                    .font(.system(size: 13, design: .monospaced))
+                                    .foregroundColor(Color.white.opacity(0.55))
+                            }
+                        }
+                        .padding(.top, 24)
+                        
+                        // Toggles
+                        VStack(spacing: 0) {
+                            toggleRow("Enable Superuser", $isRootEnabled, icon: "key.fill", color: .orange)
+                            Divider().background(Color.white.opacity(0.1)).padding(.leading, 50)
+                            toggleRow("Unmount Modules", $unmountModules, icon: "puzzlepiece.extension.fill", color: .purple)
+                            Divider().background(Color.white.opacity(0.1)).padding(.leading, 50)
+                            toggleRow("Storage Isolation", $allowStorage, icon: "externaldrive.fill", color: .cyan)
+                        }
+                        .background(Color.white.opacity(0.05))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.08), lineWidth: 0.5))
+                        .padding(.horizontal, 16)
+                        
+                        // Danger Zone
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("DANGER ZONE")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(Color.white.opacity(0.4))
+                                .padding(.leading, 12)
+                            
+                            Button(action: {
+                                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                                isRootEnabled = false
+                                dismiss()
+                            }) {
+                                HStack {
+                                    Text("Revoke Permissions")
+                                        .font(.system(size: 16, weight: .semibold))
+                                    Spacer()
+                                }
+                                .foregroundColor(.red)
+                                .padding(16)
+                                .background(Color.white.opacity(0.05))
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.red.opacity(0.3), lineWidth: 0.5))
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 16)
+                    }
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { dismiss() }) {
+                        Text("Done").bold().foregroundColor(Color(red: 0.21, green: 0.82, blue: 0.40))
+                    }
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+    
+    private func toggleRow(_ title: String, _ binding: Binding<Bool>, icon: String, color: Color) -> some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Rectangle().fill(color).frame(width: 32, height: 32).cornerRadius(8)
+                Image(systemName: icon).foregroundColor(.white).font(.system(size: 14, weight: .semibold))
+            }
+            Text(title)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.white)
+            Spacer()
+            Toggle("", isOn: binding)
+                .labelsHidden()
+                .tint(Color(red: 0.21, green: 0.82, blue: 0.40))
+        }
+        .padding(12)
     }
 }
