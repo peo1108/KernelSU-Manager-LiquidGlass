@@ -62,7 +62,7 @@ class AppListManager: ObservableObject {
     }
 
     private func loadMockApps() -> [AppInfo] {
-        return [
+        let mockApps: [AppInfo] = [
             AppInfo(name: "TikTok", bundleId: "com.zhiliaoapp.musically", isRoot: true, isSystem: false),
             AppInfo(name: "Facebook", bundleId: "com.facebook.Facebook", isRoot: false, isSystem: false),
             AppInfo(name: "Messenger", bundleId: "com.facebook.Messenger", isRoot: true, isSystem: false),
@@ -114,6 +114,7 @@ class AppListManager: ObservableObject {
             AppInfo(name: "Techcombank", bundleId: "vn.com.techcombank.f@stmobile", isRoot: false, isSystem: false),
             AppInfo(name: "VNeID", bundleId: "vn.gov.bca.vneid", isRoot: false, isSystem: false),
             AppInfo(name: "VssID", bundleId: "vn.gov.baohiemxahoi.vssid", isRoot: false, isSystem: false)
-        ].sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        ]
+        return mockApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 }
