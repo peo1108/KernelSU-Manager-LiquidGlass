@@ -13,7 +13,7 @@ struct HomeView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("LiquidJB")
+                Text("KSU JB")
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(ksOnSurface)
                 Spacer()
@@ -54,7 +54,8 @@ struct HomeView: View {
                         .padding(.vertical, 12)
                         
                         VStack(spacing: 0) {
-                            diagRow(title: "Darwin Kernel", value: "23.4.0 (arm64e)")
+                            diagRow(title: "Device", value: "iPhone 16 Pro Max (D83AP)")
+                            diagRow(title: "Darwin Kernel", value: "32.4.0 (arm64e)")
                             diagRow(title: "AMFI / SSV", value: "Patched (Active)", statusColor: ksGreen)
                             diagRow(title: "System Uptime", value: "4d 12h 03m 44s")
                             diagRow(title: "Daemon", value: "jailbreakd (PID 74)", statusColor: ksCyan)
@@ -90,7 +91,7 @@ struct HomeView: View {
                         Text("Jailbroken")
                             .font(.system(size: 22, weight: .bold))
                             .foregroundColor(ksGreen)
-                        Text("iOS 16.5 (Rootless)")
+                        Text("iOS 26.4 (Rootless)")
                             .font(.system(size: 12, design: .monospaced))
                             .foregroundColor(ksGreen.opacity(0.7))
                     }
