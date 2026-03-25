@@ -16,9 +16,7 @@ class AppListManager: ObservableObject {
     }
     
     func fetchApps() {
-        // Fallback to Mock Apps Immediately for Simulator/Windows CI
         #if targetEnvironment(simulator)
-        print("Simulator detected: Fallback to Mock apps.")
         self.apps = loadMockApps()
         return
         #endif
@@ -55,14 +53,24 @@ class AppListManager: ObservableObject {
             }
         }
         
-        // Fallback if Sandbox restricts
         DispatchQueue.main.async {
             self.apps = self.loadMockApps()
         }
     }
 
+    // Split into small batches to avoid Swift compiler type-checker timeout
     private func loadMockApps() -> [AppInfo] {
-        let mockApps: [AppInfo] = [
+        var all: [AppInfo] = []
+        all.append(contentsOf: mockBatch1())
+        all.append(contentsOf: mockBatch2())
+        all.append(contentsOf: mockBatch3())
+        all.append(contentsOf: mockBatch4())
+        all.append(contentsOf: mockBatch5())
+        return all.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+    }
+    
+    private func mockBatch1() -> [AppInfo] {
+        return [
             AppInfo(name: "TikTok", bundleId: "com.zhiliaoapp.musically", isRoot: true, isSystem: false),
             AppInfo(name: "Facebook", bundleId: "com.facebook.Facebook", isRoot: false, isSystem: false),
             AppInfo(name: "Messenger", bundleId: "com.facebook.Messenger", isRoot: true, isSystem: false),
@@ -73,6 +81,11 @@ class AppListManager: ObservableObject {
             AppInfo(name: "YouTube", bundleId: "com.google.ios.youtube", isRoot: false, isSystem: false),
             AppInfo(name: "Instagram", bundleId: "com.burbn.instagram", isRoot: false, isSystem: false),
             AppInfo(name: "Twitter", bundleId: "com.atebits.Tweetie2", isRoot: true, isSystem: false),
+        ]
+    }
+    
+    private func mockBatch2() -> [AppInfo] {
+        return [
             AppInfo(name: "Telegram", bundleId: "ph.telegra.Telegraph", isRoot: false, isSystem: false),
             AppInfo(name: "WhatsApp", bundleId: "net.whatsapp.WhatsApp", isRoot: false, isSystem: false),
             AppInfo(name: "Netflix", bundleId: "com.netflix.Netflix", isRoot: false, isSystem: false),
@@ -83,6 +96,11 @@ class AppListManager: ObservableObject {
             AppInfo(name: "Grab", bundleId: "com.grabtaxi.passenger", isRoot: false, isSystem: false),
             AppInfo(name: "Gojek", bundleId: "com.gojek.app", isRoot: false, isSystem: false),
             AppInfo(name: "Snapchat", bundleId: "com.toyopagroup.picaboo", isRoot: false, isSystem: false),
+        ]
+    }
+    
+    private func mockBatch3() -> [AppInfo] {
+        return [
             AppInfo(name: "Pinterest", bundleId: "pinterest", isRoot: false, isSystem: false),
             AppInfo(name: "Reddit", bundleId: "com.reddit.Reddit", isRoot: false, isSystem: false),
             AppInfo(name: "Discord", bundleId: "com.hammerandchisel.discord", isRoot: false, isSystem: false),
@@ -93,6 +111,11 @@ class AppListManager: ObservableObject {
             AppInfo(name: "CapCut", bundleId: "com.lemon.jy.ios", isRoot: false, isSystem: false),
             AppInfo(name: "Zoom", bundleId: "us.zoom.videomeetings", isRoot: false, isSystem: false),
             AppInfo(name: "Microsoft Teams", bundleId: "com.microsoft.skype.teams", isRoot: false, isSystem: false),
+        ]
+    }
+    
+    private func mockBatch4() -> [AppInfo] {
+        return [
             AppInfo(name: "Lien Quan Mobile", bundleId: "com.garena.game.kgvn", isRoot: false, isSystem: false),
             AppInfo(name: "Free Fire", bundleId: "com.dts.freefireth", isRoot: false, isSystem: false),
             AppInfo(name: "Roblox", bundleId: "com.roblox.robloxmobile", isRoot: false, isSystem: false),
@@ -103,6 +126,11 @@ class AppListManager: ObservableObject {
             AppInfo(name: "Photos", bundleId: "com.apple.mobileslideshow", isRoot: false, isSystem: true),
             AppInfo(name: "App Store", bundleId: "com.apple.AppStore", isRoot: false, isSystem: true),
             AppInfo(name: "Mail", bundleId: "com.apple.mobilemail", isRoot: false, isSystem: true),
+        ]
+    }
+    
+    private func mockBatch5() -> [AppInfo] {
+        return [
             AppInfo(name: "Tinder", bundleId: "com.cardify.tinder", isRoot: false, isSystem: false),
             AppInfo(name: "Bumble", bundleId: "com.bumble.app", isRoot: false, isSystem: false),
             AppInfo(name: "WeChat", bundleId: "com.tencent.xin", isRoot: false, isSystem: false),
@@ -111,10 +139,9 @@ class AppListManager: ObservableObject {
             AppInfo(name: "MoMo", bundleId: "com.mservice.momotransfer", isRoot: false, isSystem: false),
             AppInfo(name: "MB Bank", bundleId: "com.mbmobile", isRoot: false, isSystem: false),
             AppInfo(name: "Vietcombank", bundleId: "com.VCB", isRoot: false, isSystem: false),
-            AppInfo(name: "Techcombank", bundleId: "vn.com.techcombank.f@stmobile", isRoot: false, isSystem: false),
+            AppInfo(name: "Techcombank", bundleId: "vn.com.techcombank.fastmobile", isRoot: false, isSystem: false),
             AppInfo(name: "VNeID", bundleId: "vn.gov.bca.vneid", isRoot: false, isSystem: false),
-            AppInfo(name: "VssID", bundleId: "vn.gov.baohiemxahoi.vssid", isRoot: false, isSystem: false)
+            AppInfo(name: "VssID", bundleId: "vn.gov.baohiemxahoi.vssid", isRoot: false, isSystem: false),
         ]
-        return mockApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 }

@@ -29,9 +29,11 @@ jobs:
             -scheme KernelSU_iOS \
             -configuration Release \
             -archivePath build/KernelSU_iOS.xcarchive \
+            -destination 'generic/platform=iOS' \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO
 
       - name: Export IPA
         run: |
